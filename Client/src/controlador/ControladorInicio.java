@@ -19,6 +19,7 @@ public class ControladorInicio implements ActionListener, WindowListener {
     private final IVistaInicio vista;
     private Cliente cliente;
     private int miPuerto;
+    private String miNickname;
 
     private ControladorInicio() {
         this.vista = new VistaInicio();
@@ -33,6 +34,7 @@ public class ControladorInicio implements ActionListener, WindowListener {
         this.cliente.setIpServer(ConfiguracionServer.getConfig().getIp());
 
         this.cliente.setPuertoOrigen(miPuerto); //Lo seteo para evitar problemas en el ServerSocket en el run()
+        this.cliente.setNicknameOrigen(miNickname);
 
         Thread hiloCliente = new Thread(this.cliente);
         hiloCliente.start();
@@ -110,8 +112,14 @@ public class ControladorInicio implements ActionListener, WindowListener {
     	this.miPuerto = puerto;
         actualizarTituloVista();
     }
+    
+    
 
-    public void actualizarTituloVista(){
+    public void setMiNickname(String miNickname) {
+		this.miNickname = miNickname;
+	}
+
+	public void actualizarTituloVista(){
         InetAddress adress; //Obtengo la ip origen (Informacion extra)
 
         try {

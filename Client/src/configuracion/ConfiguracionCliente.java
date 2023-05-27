@@ -5,9 +5,10 @@ public class ConfiguracionCliente extends Configuracion{
     private static ConfiguracionCliente config = null;
     private static final String path = "chat.config";
 
-    private ConfiguracionCliente(String IP, int puerto) {
+    private ConfiguracionCliente(String IP, int puerto,String nickname) {
         super.setIp(IP);
         super.setPuerto(puerto);
+        super.setNickname(nickname);
         leerArchivoConfiguracion();
     }
 
@@ -21,9 +22,9 @@ public class ConfiguracionCliente extends Configuracion{
         return config;
     }
 
-    public static ConfiguracionCliente getConfig(String IP, int puerto){
+    public static ConfiguracionCliente getConfig(String IP, int puerto,String nickname){
         if (config == null)
-            config = new ConfiguracionCliente(IP, puerto);
+            config = new ConfiguracionCliente(IP, puerto,nickname);
         return config;
     }
 

@@ -10,6 +10,8 @@ public class Mensaje implements Serializable {
     String Mensaje;
     int puertoDestino;
     int puertoOrigen;
+    String nicknameOrigen;
+    String nicknameDestino;
     PublicKey publicKey;
 
     public Mensaje() {
@@ -62,8 +64,25 @@ public class Mensaje implements Serializable {
     public void setMensaje(String mensaje) {
         Mensaje = mensaje;
     }
+    
 
-    @Override
+    public String getNicknameOrigen() {
+		return nicknameOrigen;
+	}
+
+	public void setNicknameOrigen(String nicknameOrigen) {
+		this.nicknameOrigen = nicknameOrigen;
+	}
+
+	public String getNicknameDestino() {
+		return nicknameDestino;
+	}
+
+	public void setNicknameDestino(String nicknameDestino) {
+		this.nicknameDestino = nicknameDestino;
+	}
+
+	@Override
     public String toString() {
         return "Mensaje{" +
                 "ipOrigen='" + ipOrigen + '\'' +

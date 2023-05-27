@@ -9,6 +9,7 @@ public abstract class Configuracion implements Configurar{
 
     private String ip;
     private int puerto;
+    private String nickname;
 
     public boolean puertoValido(int puerto){
         return (puerto>0 && puerto<65535);
@@ -55,8 +56,17 @@ public abstract class Configuracion implements Configurar{
     public void setPuerto(int puerto) {
         this.puerto = puerto;
     }
+    
 
-    @Override
+    public String getNickname() {
+		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
+	}
+
+	@Override
     public String[] getParametros() {
         String[] param = new String[2];
         param[0] = this.getIp();

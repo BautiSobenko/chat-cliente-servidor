@@ -31,6 +31,8 @@ public class Cliente implements Runnable, Emision, Recepcion {
     private String ipServer;
     private String ipDestino;
     private String ipOrigen;
+    private String nicknameOrigen;
+    private String nicknameDestino;
 
     private final Encriptacion<PublicKey> rsa;
     private PublicKey publicKeyExtremo; //Public Key que me envia el extremo para el cifrado de mensajes
@@ -64,6 +66,7 @@ public class Cliente implements Runnable, Emision, Recepcion {
             if( msg.equals("REGISTRO")  || msg.equals("ELIMINA REGISTRO") ) {
                 mensaje.setIpDestino(this.ipOrigen);
                 mensaje.setPuertoDestino(this.puertoOrigen);
+                mensaje.setNicknameOrigen(this.nicknameOrigen);
             }else {
 
                 if( this.ipDestino.equals("localhost") ) //Si es "localhost", debo trabajo con la IP real, no con la String "localhost"
@@ -235,7 +238,24 @@ public class Cliente implements Runnable, Emision, Recepcion {
         return ipOrigen;
     }
 
-    @Override
+    
+    public String getNicknameOrigen() {
+		return nicknameOrigen;
+	}
+
+	public void setNicknameOrigen(String nicknameOrigen) {
+		this.nicknameOrigen = nicknameOrigen;
+	}
+
+	public String getNicknameDestino() {
+		return nicknameDestino;
+	}
+
+	public void setNicknameDestino(String nicknameDestino) {
+		this.nicknameDestino = nicknameDestino;
+	}
+
+	@Override
     public Mensaje recibeMensaje() {
         ObjectInputStream in = conexion.getInputStreamConexion();
         try {

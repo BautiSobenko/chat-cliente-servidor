@@ -42,6 +42,8 @@ public class ControladorConfiguracion implements ActionListener, WindowListener 
 
 		try {
 
+			//To-Do: agregar campo nickname por si lo desea cambiar
+			
 			ControladorInicio controladorInicio = ControladorInicio.get(true);
 
 			String IP = "localhost";
@@ -50,7 +52,7 @@ public class ControladorConfiguracion implements ActionListener, WindowListener 
 
 				int miPuerto = vista.getPuerto();
 
-				Configuracion configuracion = ConfiguracionCliente.getConfig(IP, miPuerto);
+				Configuracion configuracion = ConfiguracionCliente.getConfig(IP, miPuerto,nickname);
 
 				if (configuracion.validarConfiguracion()){
 

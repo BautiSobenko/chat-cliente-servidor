@@ -8,8 +8,8 @@ import vista.vistas.VistaServidor;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Servidor implements Runnable, Recepcion, Emision {
 
@@ -19,8 +19,11 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
     private final int puertoServer;
 
-    private HashMap<Integer, String> conexiones;
-    private HashMap<Integer, String> registro;
+   // private HashMap<Integer, String> conexiones;
+    //private HashMap<Integer, String> registro;
+    
+    private ArrayList<clienteConectado> registros = new ArrayList<clienteConectado>();
+    private ArrayList<clienteConectado> conexiones = new ArrayList<clienteConectado>();
 
     private Conexion conexion;
 
@@ -31,8 +34,8 @@ public class Servidor implements Runnable, Recepcion, Emision {
         this.vistaServidor = new VistaServidor();
 
 
-        conexiones = new HashMap<>();
-        registro = new HashMap<>();
+        //conexiones = new HashMap<>();
+        //registro = new HashMap<>();
 
         Thread hiloServer = new Thread(this);
         hiloServer.start();
@@ -52,6 +55,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
         String ipOrigen = null;
         int puertoOrigen = 0;
+        String nicknameOrigen = null;
         try {
 
             this.conexion = new Conexion();
@@ -62,6 +66,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
             this.vistaServidor.muestraMensaje("Servidor Iniciado! \nPuerto: " + this.puertoServer + "\n");
 
             String ipDestino;
+            String nicknameDestino = null;
             String msg;
             int puertoDestino;
             Mensaje mensaje;
@@ -77,22 +82,24 @@ public class Servidor implements Runnable, Recepcion, Emision {
                 puertoOrigen = mensaje.getPuertoOrigen();
                 ipOrigen = mensaje.getIpOrigen();
                 ipDestino = mensaje.getIpDestino();
+                nicknameOrigen = mensaje.getNicknameOrigen();
+                nicknameDestino = mensaje.getNicknameDestino();
                 msg = mensaje.getMensaje();
 
                 if( msg.equals("ELIMINA REGISTRO") ) {
-                    this.registro.remove(puertoOrigen);
-                    this.vistaServidor.muestraMensaje("BAJA CLIENTE: " + ipOrigen + " | " + puertoOrigen + "\n\n");
+                    this.eliminaRegistro(ipOrigen, puertoOrigen);
+                    this.vistaServidor.muestraMensaje("BAJA CLIENTE: "+ nicknameOrigen +" | "+ ipOrigen + " | " + puertoOrigen + "\n\n");
                 }else {
 
                     if (msg.equalsIgnoreCase("LLAMADA ACEPTADA")) {
-                        this.conexiones.put(puertoOrigen, ipOrigen);
-                        this.conexiones.put(puertoDestino, ipDestino);
+                        this.agregaConectado(ipOrigen,puertoOrigen,nicknameOrigen);
+                        this.agregaConectado(ipDestino,puertoDestino,nicknameDestino);
                     } else if (msg.equalsIgnoreCase("DESCONECTAR")) {
-                        this.conexiones.remove(puertoOrigen);
-                        this.conexiones.remove(puertoDestino);
+                        this.eliminaConectado(ipOrigen, puertoOrigen);
+                        this.eliminaConectado(ipDestino, puertoDestino);
                     } else if (msg.equalsIgnoreCase("REGISTRO")) {
 
-                        if (this.registrarCliente(ipOrigen, puertoOrigen))
+                        if (this.registrarCliente(ipOrigen, puertoOrigen,nicknameOrigen))
                             msg = "REGISTRO EXITOSO";
                         else
                             msg = "REGISTRO FALLIDO";
@@ -129,7 +136,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
                 ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
                 out.writeObject(mensaje);
 
-                this.vistaServidor.muestraMensaje("ERROR EN CONEXION: " + ipOrigen + " | " + puertoOrigen + "\n\n");
+                this.vistaServidor.muestraMensaje("ERROR EN CONEXION: "+ nicknameOrigen +" | "+ ipOrigen + " | " + puertoOrigen + "\n\n");
 
                 this.conexion.cerrarConexion();
 
@@ -150,32 +157,43 @@ public class Servidor implements Runnable, Recepcion, Emision {
     public boolean verificaConexion(String ipDestino, int puertoDestino) {
         boolean conexionExistente = false;
 
-        for (Map.Entry<Integer, String> entry : this.conexiones.entrySet()) {
+        /*for (Map.Entry<Integer, String> entry : this.conexiones.entrySet()) {
             if( entry.getValue().equalsIgnoreCase(ipDestino) && entry.getKey() == puertoDestino) {
                 conexionExistente = true;
                 break;
             }
         }
+        */
+        ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) conexiones.stream().filter(e -> e.getIp()==ipDestino && e.getPuerto()==puertoDestino).collect(Collectors.toList());
 
+        if(filtrado.size()>0)
+        	conexionExistente = true;
+        
         return conexionExistente;
     }
 
-    public boolean registrarCliente(String ipOrigen, int puertoOrigen) {
+    public boolean registrarCliente(String ipOrigen, int puertoOrigen, String nicknameOrigen) {
 
         boolean existeRegistro = false;
 
-        for (Map.Entry<Integer, String> entry : this.registro.entrySet()) {
+        /*for (Map.Entry<Integer, String> entry : this.registro.entrySet()) {
             if( entry.getValue().equalsIgnoreCase(ipOrigen) && entry.getKey() == puertoOrigen) {
                 existeRegistro = true;
                 break;
             }
-        }
+        }*/
+        
+        ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) registros.stream().filter(e -> e.getIp()==ipOrigen && e.getPuerto()==puertoOrigen).collect(Collectors.toList());
 
+        if(filtrado.size()>0)
+        	existeRegistro = true;
+        
         if( existeRegistro ){
             return false;
         }else{
-            this.registro.put(puertoOrigen, ipOrigen);
-            this.vistaServidor.muestraMensaje("REGISTRO: " + ipOrigen + " | " + puertoOrigen + "\n\n");
+        	clienteConectado cliente = new clienteConectado(ipOrigen,puertoOrigen,nicknameOrigen);
+            this.registros.add(cliente);
+            this.vistaServidor.muestraMensaje("REGISTRO: "+ nicknameOrigen +" | "+ ipOrigen + " | " + puertoOrigen + "\n\n");
 
             return true;
 
@@ -192,4 +210,36 @@ public class Servidor implements Runnable, Recepcion, Emision {
             throw new RuntimeException(e);
         }
     }
+    
+    public void agregaConectado(String ip, int puerto,String nickname) {
+    	boolean noExiste = true;
+    	
+    	ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) conexiones.stream().filter(e -> e.getIp()==ip && e.getPuerto()==puerto).collect(Collectors.toList());
+
+        if(filtrado.size()>0)
+        	noExiste = false;
+        
+        if( noExiste ){
+        	clienteConectado cliente = new clienteConectado(ip,puerto,nickname);
+            this.conexiones.add(cliente);
+        }
+    }
+    
+    public void eliminaRegistro(String ip, int puerto) {
+    	
+    	//Guardo todos los que sean distintos
+        ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) registros.stream().filter(e -> e.getIp()!=ip && e.getPuerto()!=puerto).collect(Collectors.toList());
+        
+        this.registros = filtrado;
+    }
+    
+    public void eliminaConectado(String ip, int puerto) {
+    	
+    	//Guardo todos los que sean distintos
+        ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) conexiones.stream().filter(e -> e.getIp()!=ip && e.getPuerto()!=puerto).collect(Collectors.toList());
+        
+        this.conexiones = filtrado;
+    }
+    
+    
 }

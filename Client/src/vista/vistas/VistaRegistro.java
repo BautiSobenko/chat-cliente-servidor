@@ -15,6 +15,7 @@ public class VistaRegistro extends JFrame implements IVistaConfiguracion {
 	private final JTextField txtPuerto;
 	private final JButton btnRegistrar;
 	private final JLabel lblDireccionIP;
+	private JTextField txtNickName;
 
 	/**
 	 * Launch the application.
@@ -38,7 +39,7 @@ public class VistaRegistro extends JFrame implements IVistaConfiguracion {
 	public VistaRegistro() {
 		setTitle("Registro en Servidor");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 533, 341);
 		JPanel contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -48,7 +49,7 @@ public class VistaRegistro extends JFrame implements IVistaConfiguracion {
 		JLabel lbl1 = new JLabel("Direccion IP");
 		lbl1.setHorizontalAlignment(SwingConstants.CENTER);
 		lbl1.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lbl1.setBounds(164, 25, 107, 14);
+		lbl1.setBounds(208, 22, 107, 14);
 		contentPane.add(lbl1);
 		
 		this.lblDireccionIP = new JLabel("");
@@ -60,19 +61,30 @@ public class VistaRegistro extends JFrame implements IVistaConfiguracion {
 		JLabel lblIngreseSuPuerto = new JLabel("Ingrese su Puerto");
 		lblIngreseSuPuerto.setHorizontalAlignment(SwingConstants.CENTER);
 		lblIngreseSuPuerto.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblIngreseSuPuerto.setBounds(152, 103, 127, 26);
+		lblIngreseSuPuerto.setBounds(191, 100, 127, 26);
 		contentPane.add(lblIngreseSuPuerto);
 		
 		txtPuerto = new JTextField();
 		txtPuerto.setHorizontalAlignment(SwingConstants.CENTER);
-		txtPuerto.setBounds(142, 142, 146, 30);
+		txtPuerto.setBounds(191, 137, 146, 30);
 		contentPane.add(txtPuerto);
 		txtPuerto.setColumns(10);
 		
 		this.btnRegistrar = new JButton("Registrar");
 		btnRegistrar.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		btnRegistrar.setBounds(72, 199, 285, 39);
+		btnRegistrar.setBounds(122, 254, 285, 39);
 		contentPane.add(btnRegistrar);
+		
+		JLabel lblNewLabel = new JLabel("Ingrese su nombre de usuario:");
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblNewLabel.setBounds(145, 178, 234, 14);
+		contentPane.add(lblNewLabel);
+		
+		txtNickName = new JTextField();
+		txtNickName.setHorizontalAlignment(SwingConstants.CENTER);
+		txtNickName.setColumns(10);
+		txtNickName.setBounds(191, 203, 146, 30);
+		contentPane.add(txtNickName);
 	}
 
 	@Override
@@ -117,5 +129,9 @@ public class VistaRegistro extends JFrame implements IVistaConfiguracion {
 	@Override
 	public void setTxtPuerto(String puerto) {
 
+	}
+	
+	public String getNickname() {
+		return this.txtNickName.getText();
 	}
 }
