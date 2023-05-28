@@ -19,8 +19,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
     private final int puertoServer;
 
-   // private HashMap<Integer, String> conexiones;
-    //private HashMap<Integer, String> registro;
     
     private ArrayList<clienteConectado> registros = new ArrayList<clienteConectado>();
     private ArrayList<clienteConectado> conexiones = new ArrayList<clienteConectado>();
@@ -32,10 +30,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
         this.puertoServer = Integer.parseInt(ConfiguracionServer.getConfig().getParametros()[1]);
 
         this.vistaServidor = new VistaServidor();
-
-
-        //conexiones = new HashMap<>();
-        //registro = new HashMap<>();
 
         Thread hiloServer = new Thread(this);
         hiloServer.start();
@@ -100,7 +94,8 @@ public class Servidor implements Runnable, Recepcion, Emision {
                     } else if (msg.equalsIgnoreCase("REGISTRO")) {
 
                         if (this.registrarCliente(ipOrigen, puertoOrigen,nicknameOrigen))
-                            msg = "REGISTRO EXITOSO";
+                            //Aca se deberia reenviar la lista de clientes conectados
+                        	msg = "REGISTRO EXITOSO";
                         else
                             msg = "REGISTRO FALLIDO";
 

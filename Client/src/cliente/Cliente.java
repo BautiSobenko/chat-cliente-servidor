@@ -61,6 +61,7 @@ public class Cliente implements Runnable, Emision, Recepcion {
             this.ipOrigen = adress.getHostAddress();
             mensaje.setPuertoOrigen(this.puertoOrigen);
             mensaje.setIpOrigen(this.ipOrigen);
+            mensaje.setNicknameOrigen(this.nicknameOrigen);
 
 
             if( msg.equals("REGISTRO")  || msg.equals("ELIMINA REGISTRO") ) {
@@ -145,7 +146,7 @@ public class Cliente implements Runnable, Emision, Recepcion {
         try {
             this.conexion.establecerConexion(this.puertoOrigen);
 
-            String ipD, ipO, txt;
+            String ipD, ipO, txt,nickname;
             Mensaje mensajeRecibido;
 
             while (true) {
@@ -157,13 +158,14 @@ public class Cliente implements Runnable, Emision, Recepcion {
                 txt = mensajeRecibido.getMensaje();
                 ipO = mensajeRecibido.getIpOrigen();
                 ipD = mensajeRecibido.getIpDestino();
+                nickname = mensajeRecibido.getNicknameOrigen();
 
                 if (txt.equalsIgnoreCase("LLAMADA")) {
                     ControladorRecepcionLlamada controladorRecepcionLlamada = ControladorRecepcionLlamada.get(false);
                     controladorRecepcionLlamada.setIpOrigen(ipD);
                     controladorRecepcionLlamada.setIpDestino(ipO); //IP Del que me envio ese mensaje
                     controladorRecepcionLlamada.setPuertoDestino(mensajeRecibido.getPuertoOrigen()); //Puerto Del que me envio ese mensaje
-                    controladorRecepcionLlamada.actualizarLabelIP(ipO);
+                    controladorRecepcionLlamada.actualizarLabelIP(ipO,nickname);
                     ControladorRecepcionLlamada.get(true);
                     this.publicKeyExtremo = mensajeRecibido.getPublicKey(); //Recibo clave publica del extremo (puedo aceptar la llamada)
                 }
@@ -192,7 +194,7 @@ public class Cliente implements Runnable, Emision, Recepcion {
                 }
                 else {
                     String mensajeDesencriptado = this.rsa.desencriptar(txt); //Lo desencripto con mi clave privada. El extremo encripto con mi clave publica (enviada)
-                    ControladorSesionLlamada.get(false).muestraMensaje(ipD + ": " + mensajeDesencriptado);
+                    ControladorSesionLlamada.get(false).muestraMensaje(nickname + ": " + mensajeDesencriptado);
                 }
 
                 this.conexion.cerrarConexion();

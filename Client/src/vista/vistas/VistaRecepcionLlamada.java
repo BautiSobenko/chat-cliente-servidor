@@ -44,7 +44,7 @@ public class VistaRecepcionLlamada extends JFrame implements IVistaRecepcionLlam
 		contentPane.add(btnRechazar);
 		
 		lblIP = new JLabel("");
-		lblIP.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblIP.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblIP.setBounds(118, 23, 370, 36);
 		contentPane.add(lblIP);
 		
@@ -73,7 +73,7 @@ public class VistaRecepcionLlamada extends JFrame implements IVistaRecepcionLlam
 	}
 
 	@Override
-	public void setLabelIP(String IP) {
-		this.lblIP.setText("Llamada entrante de la direccion:  "+ IP);
+	public void setLabelIP(String IP, String nickname) {
+		this.lblIP.setText("Llamada entrante de "+nickname +" en la direccion:  "+ IP);
 	}
 }

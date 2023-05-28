@@ -12,7 +12,7 @@ public class ControladorRecepcionLlamada implements ActionListener {
     private static ControladorRecepcionLlamada controladorRecepcionLlamada = null;
 
     private final IVistaRecepcionLlamada vista;
-    private String ipDestino;
+    private String ipDestino, nicknameDestino;
     private String ipOrigen;
     private int puertoOrigen;
     private int puertoDestino;
@@ -35,8 +35,8 @@ public class ControladorRecepcionLlamada implements ActionListener {
         return controladorRecepcionLlamada;
     }
 
-    public void actualizarLabelIP(String IP){
-        controladorRecepcionLlamada.vista.setLabelIP(IP);
+    public void actualizarLabelIP(String IP,String nickname){
+        controladorRecepcionLlamada.vista.setLabelIP(IP,nickname);
     }
 
     @Override
@@ -89,5 +89,14 @@ public class ControladorRecepcionLlamada implements ActionListener {
     public void setPuertoOrigen(int puertoOrigen) {
         this.puertoOrigen = puertoOrigen;
     }
+
+	public String getNicknameDestino() {
+		return nicknameDestino;
+	}
+
+	public void setNicknameDestino(String nicknameDestino) {
+		this.nicknameDestino = nicknameDestino;
+	}
+    
 }
 
