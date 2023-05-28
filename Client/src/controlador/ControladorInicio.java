@@ -2,7 +2,7 @@ package controlador;
 
 import cliente.Cliente;
 import configuracion.ConfiguracionServer;
-import servidor.clienteConectado;
+import mensaje.clienteConectado;
 import vista.interfaces.IVistaInicio;
 import vista.vistas.VistaInicio;
 

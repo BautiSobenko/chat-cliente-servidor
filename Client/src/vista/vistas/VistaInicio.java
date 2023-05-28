@@ -7,9 +7,6 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-
-import servidor.clienteConectado;
-
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -30,15 +27,21 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
 import javax.swing.event.ListSelectionListener;
+
+import mensaje.clienteConectado;
+
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.DefaultListModel;
 
 public class VistaInicio extends JFrame implements IVistaInicio {
 
 	private JTextField txtPuerto;
 	private final JButton btnConfiguracion;
 	private final JButton btnConectar;
+	private final JButton btnRecargarConectados;
 	private final JTextField txtIP;
 	private JList<clienteConectado> listaConectados;
+	private DefaultListModel modelo = new DefaultListModel();
 
 	/**
 	 * Launch the application.
@@ -108,21 +111,18 @@ public class VistaInicio extends JFrame implements IVistaInicio {
 		listaConectados = new JList();
 		listaConectados.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
-				//Aca se van a setear los campos
+				clienteConectado clienteElegido = (clienteConectado) modelo.get(e.getFirstIndex());
+				txtIP.setText(clienteElegido.getIp());
+				txtPuerto.setText(Integer.toString(clienteElegido.getPuerto()));
 			}
 		});
 		listaConectados.setBounds(32, 23, 576, 288);
 		contentPane.add(listaConectados);
 		
-		JButton btnRecrgarConectados = new JButton("Recargar Conectados");
-		btnRecrgarConectados.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				///Aca se va a enviar un mensaje que pida la lista de nuevo
-			}
-		});
-		btnRecrgarConectados.setFont(new Font("Tahoma", Font.BOLD, 13));
-		btnRecrgarConectados.setBounds(227, 317, 196, 48);
-		contentPane.add(btnRecrgarConectados);
+		btnRecargarConectados = new JButton("Recargar Conectados");
+		btnRecargarConectados.setFont(new Font("Tahoma", Font.BOLD, 13));
+		btnRecargarConectados.setBounds(227, 317, 196, 48);
+		contentPane.add(btnRecargarConectados);
 
 		this.esconder();
 	}
@@ -191,14 +191,10 @@ public class VistaInicio extends JFrame implements IVistaInicio {
 	@Override
 	public void setConectados(ArrayList<clienteConectado> lista) {
 		// TODO Auto-generated method stub
-		Iterator<clienteConectado> it = lista.iterator();
-		int i=0;
-		String conectados[];
-		while(it.hasNext()){
-			conectados[i] = it.toString();
-			it.next();
-			i+=1;
+		this.modelo.removeAllElements();
+		for(int i=0; i<lista.size() ; i++) {
+			this.modelo.addElement(lista.get(i));
 		}
-		this.listaConectados.setModel(conectados);
+		this.listaConectados.setModel(this.modelo);
 	}
 }

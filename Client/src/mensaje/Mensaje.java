@@ -4,11 +4,9 @@ import java.io.Serializable;
 import java.security.PublicKey;
 import java.util.ArrayList;
 
-import servidor.clienteConectado;
-
 public class Mensaje implements Serializable {
-
-    String ipOrigen;
+	
+	String ipOrigen;
     String ipDestino;
     String Mensaje;
     int puertoDestino;
@@ -89,7 +87,6 @@ public class Mensaje implements Serializable {
 	public void setConectados(ArrayList<clienteConectado> conectados) {
 		this.conectados = conectados;
 	}
-	
 
 	public ArrayList<clienteConectado> getConectados() {
 		return conectados;

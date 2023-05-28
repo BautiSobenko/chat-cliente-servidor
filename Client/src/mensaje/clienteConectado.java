@@ -1,4 +1,4 @@
-package cliente;
+package mensaje;
 
 import java.io.Serializable;
 
@@ -49,7 +49,7 @@ public class clienteConectado implements Serializable{
 	}
 	
     public String toString() {
-        return this.nickname+" en el puerto "+this.puerto;
+        return this.nickname+" en la direccion "+this.ip +" y en el puerto "+this.puerto;
       }
 
 }

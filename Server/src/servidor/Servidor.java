@@ -3,7 +3,7 @@ package servidor;
 import conexion.Conexion;
 import configuracion.ConfiguracionServer;
 import mensaje.Mensaje;
-import mensaje.mensajeListaConectados;
+import mensaje.clienteConectado;
 import vista.vistas.VistaServidor;
 
 import java.io.IOException;
@@ -65,7 +65,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
             String msg;
             int puertoDestino, reenvioLista; //Reenvio lista es una bandera que dice que mensaje enviar
             Mensaje mensaje;
-            mensajeListaConectados listaConectados=null;
 
             while (true) {
             	reenvioLista = 0;
@@ -205,7 +204,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
     public Mensaje recibeMensaje() {
         ObjectInputStream in = conexion.getInputStreamConexion();
         try {
-            return (Mensaje) in.readObject();
+            return  (Mensaje) in.readObject();
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

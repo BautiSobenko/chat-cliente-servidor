@@ -4,7 +4,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 
-import servidor.clienteConectado;
+import mensaje.clienteConectado;
 
 public interface IVistaInicio {
 

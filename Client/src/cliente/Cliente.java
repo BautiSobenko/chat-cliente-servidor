@@ -8,8 +8,8 @@ import controlador.ControladorSesionLlamada;
 
 import encriptacion.Encriptacion;
 import encriptacion.RSA;
-
 import mensaje.Mensaje;
+import mensaje.clienteConectado;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -182,8 +182,7 @@ public class Cliente implements Runnable, Emision, Recepcion {
                 }
                 else if (txt.equalsIgnoreCase("REGISTRO EXITOSO")) {
                 	//Recibo el mensaje registro exitoso, entonces se que tengo la lista
-                    ControladorRegistro.get(false).registroCliente(true,mensajeRecibido.getConectados());
-                    
+                    ControladorRegistro.get(false).registroCliente(true,mensajeRecibido.getConectados());              
                 }
                 else if (txt.equalsIgnoreCase("REGISTRO FALLIDO")) {
                     ControladorRegistro.get(false).registroCliente(false,mensajeRecibido.getConectados());
