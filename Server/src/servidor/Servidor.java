@@ -3,6 +3,7 @@ package servidor;
 import conexion.Conexion;
 import configuracion.ConfiguracionServer;
 import mensaje.Mensaje;
+import mensaje.mensajeListaConectados;
 import vista.vistas.VistaServidor;
 
 import java.io.IOException;
@@ -62,10 +63,12 @@ public class Servidor implements Runnable, Recepcion, Emision {
             String ipDestino;
             String nicknameDestino = null;
             String msg;
-            int puertoDestino;
+            int puertoDestino, reenvioLista; //Reenvio lista es una bandera que dice que mensaje enviar
             Mensaje mensaje;
+            mensajeListaConectados listaConectados=null;
 
             while (true) {
+            	reenvioLista = 0;
 
                 //Acepto conexion, me crea un Socket
                 conexion.aceptarConexion();
@@ -93,9 +96,11 @@ public class Servidor implements Runnable, Recepcion, Emision {
                         this.eliminaConectado(ipDestino, puertoDestino);
                     } else if (msg.equalsIgnoreCase("REGISTRO")) {
 
-                        if (this.registrarCliente(ipOrigen, puertoOrigen,nicknameOrigen))
-                            //Aca se deberia reenviar la lista de clientes conectados
+                        if (this.registrarCliente(ipOrigen, puertoOrigen,nicknameOrigen)) {
                         	msg = "REGISTRO EXITOSO";
+                        	mensaje.setConectados(this.registros);
+                        	reenvioLista = 1;
+                        }
                         else
                             msg = "REGISTRO FALLIDO";
 
@@ -112,7 +117,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
                     ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
 
-                    out.writeObject(mensaje);
+                    	out.writeObject(mensaje);
                 }
 
                 this.conexion.cerrarConexion();

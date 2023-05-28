@@ -2,6 +2,7 @@ package controlador;
 
 import cliente.Cliente;
 import configuracion.ConfiguracionServer;
+import servidor.clienteConectado;
 import vista.interfaces.IVistaInicio;
 import vista.vistas.VistaInicio;
 
@@ -11,6 +12,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 public class ControladorInicio implements ActionListener, WindowListener {
 
@@ -113,7 +115,9 @@ public class ControladorInicio implements ActionListener, WindowListener {
         actualizarTituloVista();
     }
     
-    
+    public void setListaConectados(ArrayList<clienteConectado> lista) {
+    	vista.setConectados(lista);
+    }
 
     public void setMiNickname(String miNickname) {
 		this.miNickname = miNickname;

@@ -181,10 +181,12 @@ public class Cliente implements Runnable, Emision, Recepcion {
                     this.publicKeyExtremo = null;
                 }
                 else if (txt.equalsIgnoreCase("REGISTRO EXITOSO")) {
-                    ControladorRegistro.get(false).registroCliente(true);
+                	//Recibo el mensaje registro exitoso, entonces se que tengo la lista
+                    ControladorRegistro.get(false).registroCliente(true,mensajeRecibido.getConectados());
+                    
                 }
                 else if (txt.equalsIgnoreCase("REGISTRO FALLIDO")) {
-                    ControladorRegistro.get(false).registroCliente(false);
+                    ControladorRegistro.get(false).registroCliente(false,mensajeRecibido.getConectados());
                 }
                 else if (txt.equalsIgnoreCase("ERROR LLAMADA")) {
                     ControladorInicio.get(true).error("Error en la conexion");

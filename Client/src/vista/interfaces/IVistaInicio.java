@@ -2,6 +2,9 @@ package vista.interfaces;
 
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
+
+import servidor.clienteConectado;
 
 public interface IVistaInicio {
 
@@ -19,4 +22,5 @@ public interface IVistaInicio {
     void deshabilitarBotonConexion();
     void habilitarBotonConexion();
     void tituloInstancia(String ipOrigen, int miPuerto);
+    void setConectados(ArrayList<clienteConectado> lista);
 }

@@ -2,15 +2,22 @@ package mensaje;
 
 import java.io.Serializable;
 import java.security.PublicKey;
+import java.util.ArrayList;
+
+import servidor.clienteConectado;
 
 public class Mensaje implements Serializable {
+	
 
     String ipOrigen;
     String ipDestino;
     String Mensaje;
     int puertoDestino;
     int puertoOrigen;
+    String nicknameOrigen;
+    String nicknameDestino;
     PublicKey publicKey;
+    private ArrayList<clienteConectado> conectados;
 
     public Mensaje() {
     }
@@ -62,8 +69,35 @@ public class Mensaje implements Serializable {
     public void setMensaje(String mensaje) {
         Mensaje = mensaje;
     }
+    
 
-    @Override
+    public String getNicknameOrigen() {
+		return nicknameOrigen;
+	}
+
+	public void setNicknameOrigen(String nicknameOrigen) {
+		this.nicknameOrigen = nicknameOrigen;
+	}
+
+	public String getNicknameDestino() {
+		return nicknameDestino;
+	}
+
+	public void setNicknameDestino(String nicknameDestino) {
+		this.nicknameDestino = nicknameDestino;
+	}
+	
+	public void setConectados(ArrayList<clienteConectado> conectados) {
+		this.conectados = conectados;
+	}
+	
+	
+
+	public ArrayList<clienteConectado> getConectados() {
+		return conectados;
+	}
+
+	@Override
     public String toString() {
         return "Mensaje{" +
                 "ipOrigen='" + ipOrigen + '\'' +

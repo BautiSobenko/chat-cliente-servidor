@@ -2,6 +2,7 @@ package controlador;
 
 import configuracion.Configuracion;
 import configuracion.ConfiguracionCliente;
+import servidor.clienteConectado;
 import vista.interfaces.IVistaConfiguracion;
 import vista.vistas.VistaRegistro;
 
@@ -9,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 public class ControladorRegistro implements ActionListener {
 
@@ -86,11 +88,11 @@ public class ControladorRegistro implements ActionListener {
             this.vista.lanzarVentanaEmergente(msg);
         }
 
-        public void registroCliente(boolean exitoRegistro) {
+        public void registroCliente(boolean exitoRegistro, ArrayList<clienteConectado> lista) {
 
             if( exitoRegistro ){
-                ControladorInicio.get(true);
-                this.vista.esconder();
+            	this.vista.esconder();
+                ControladorInicio.get(true).setListaConectados(lista);
             }else{
                 vista.lanzarVentanaEmergente("Actualmente hay una sesion abierta con el IP y Puerto ingresado");
             }

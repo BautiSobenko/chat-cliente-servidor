@@ -1,4 +1,4 @@
-package servidor;
+package cliente;
 
 import java.io.Serializable;
 
@@ -48,6 +48,8 @@ public class clienteConectado implements Serializable{
 		this.nickname = nickname;
 	}
 	
-	
+    public String toString() {
+        return this.nickname+" en el puerto "+this.puerto;
+      }
 
 }

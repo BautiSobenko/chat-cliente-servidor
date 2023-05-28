@@ -2,6 +2,9 @@ package mensaje;
 
 import java.io.Serializable;
 import java.security.PublicKey;
+import java.util.ArrayList;
+
+import servidor.clienteConectado;
 
 public class Mensaje implements Serializable {
 
@@ -13,6 +16,7 @@ public class Mensaje implements Serializable {
     String nicknameOrigen;
     String nicknameDestino;
     PublicKey publicKey;
+    private ArrayList<clienteConectado> conectados;
 
     public Mensaje() {
     }
@@ -80,6 +84,15 @@ public class Mensaje implements Serializable {
 
 	public void setNicknameDestino(String nicknameDestino) {
 		this.nicknameDestino = nicknameDestino;
+	}
+	
+	public void setConectados(ArrayList<clienteConectado> conectados) {
+		this.conectados = conectados;
+	}
+	
+
+	public ArrayList<clienteConectado> getConectados() {
+		return conectados;
 	}
 
 	@Override
