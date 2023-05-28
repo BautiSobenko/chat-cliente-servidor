@@ -67,7 +67,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
             Mensaje mensaje;
 
             while (true) {
-            	reenvioLista = 0;
 
                 //Acepto conexion, me crea un Socket
                 conexion.aceptarConexion();
@@ -98,7 +97,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
                         if (this.registrarCliente(ipOrigen, puertoOrigen,nicknameOrigen)) {
                         	msg = "REGISTRO EXITOSO";
                         	mensaje.setConectados(this.registros);
-                        	reenvioLista = 1;
                         }
                         else
                             msg = "REGISTRO FALLIDO";
