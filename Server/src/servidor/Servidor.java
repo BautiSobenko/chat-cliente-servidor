@@ -153,14 +153,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
     public boolean verificaConexion(String ipDestino, int puertoDestino) {
         boolean conexionExistente = false;
-
-        /*for (Map.Entry<Integer, String> entry : this.conexiones.entrySet()) {
-            if( entry.getValue().equalsIgnoreCase(ipDestino) && entry.getKey() == puertoDestino) {
-                conexionExistente = true;
-                break;
-            }
-        }
-        */
+        
         ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) conexiones.stream().filter(e -> e.getIp()==ipDestino && e.getPuerto()==puertoDestino).collect(Collectors.toList());
 
         if(filtrado.size()>0)
@@ -225,7 +218,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
     public void eliminaRegistro(String ip, int puerto) {
     	
     	//Guardo todos los que sean distintos
-        ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) registros.stream().filter(e -> e.getIp()!=ip && e.getPuerto()!=puerto).collect(Collectors.toList());
+        ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) registros.stream().filter(e -> e.getIp()!=ip || e.getPuerto()!=puerto).collect(Collectors.toList());
         
         this.registros = filtrado;
     }
@@ -233,7 +226,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
     public void eliminaConectado(String ip, int puerto) {
     	
     	//Guardo todos los que sean distintos
-        ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) conexiones.stream().filter(e -> e.getIp()!=ip && e.getPuerto()!=puerto).collect(Collectors.toList());
+        ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) conexiones.stream().filter(e -> e.getIp()!=ip || e.getPuerto()!=puerto).collect(Collectors.toList());
         
         this.conexiones = filtrado;
     }
