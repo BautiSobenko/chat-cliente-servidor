@@ -3,7 +3,7 @@ package configuracion;
 public class ConfiguracionCliente extends Configuracion{
     //singleton
     private static ConfiguracionCliente config = null;
-    private static final String path = "chat.config";
+    private static final String path = "configcliente.xml";
 
     private ConfiguracionCliente(String IP, int puerto,String nickname) {
         super.setIp(IP);
@@ -12,7 +12,7 @@ public class ConfiguracionCliente extends Configuracion{
         leerArchivoConfiguracion();
     }
 
-    private ConfiguracionCliente() {
+    public ConfiguracionCliente() {
         leerArchivoConfiguracion();
     }
 
@@ -30,12 +30,11 @@ public class ConfiguracionCliente extends Configuracion{
 
     @Override
     public void escribirArchivoConfiguracion(Object... args) throws Exception{
-        super.escribirArchivo(path);
+        super.escribirArchivoXML(path);
     }
     @Override
     public void leerArchivoConfiguracion(Object... args) {
-        this.setPuerto(1500);
-        super.leerArchivo(path);
+        super.leerArchivoXML(path);
     }
 
 

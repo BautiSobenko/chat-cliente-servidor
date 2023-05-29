@@ -52,6 +52,8 @@ public class ControladorConfiguracion implements ActionListener, WindowListener 
 
 				int miPuerto = vista.getPuerto();
 
+				String nickname = "minick";
+
 				Configuracion configuracion = ConfiguracionCliente.getConfig(IP, miPuerto,nickname);
 
 				if (configuracion.validarConfiguracion()){

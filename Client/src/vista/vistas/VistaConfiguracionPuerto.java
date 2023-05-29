@@ -92,6 +92,11 @@ public class VistaConfiguracionPuerto extends JFrame implements IVistaConfigurac
 	}
 
 	@Override
+	public String getNickname() {
+		return null;
+	}
+
+	@Override
 	public void esconder() {
 		this.setVisible(false);
 	}

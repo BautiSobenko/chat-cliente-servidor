@@ -52,22 +52,18 @@ public class ControladorRegistro implements ActionListener {
 
                 ControladorInicio controladorInicio = ControladorInicio.get(false);
 
-                String IP = this.vista.getIP();
-                int miPuerto = this.vista.getPuerto();
-                String nickname = this.vista.getNickname();
+                Configuracion configCliente = new Configuracion();
+                configCliente.setIp(this.vista.getIP());
+                configCliente.setPuerto(this.vista.getPuerto());
+                configCliente.setNickname(this.vista.getNickname());
 
-                Configuracion configuracion = ConfiguracionCliente.getConfig(IP, miPuerto,nickname);
-
-                if ( configuracion.validarConfiguracion() ) {
-
-                    configuracion.setIp(IP);
-                    configuracion.setPuerto(miPuerto);
+                if ( configCliente.validarConfiguracion() ) {
 
                     //To-Do: actualizar para que escriba y levante el nickname
-                    configuracion.escribirArchivoConfiguracion();
+                    configCliente.escribirArchivoConfiguracion();
 
-                    controladorInicio.setMiPuerto(miPuerto);
-                    controladorInicio.setMiNickname(nickname);
+                    controladorInicio.setMiPuerto(this.vista.getPuerto());
+                    controladorInicio.setMiNickname(this.vista.getNickname());
                     controladorInicio.startCliente();
 
                 } else {

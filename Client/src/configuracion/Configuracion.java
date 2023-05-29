@@ -1,15 +1,21 @@
 package configuracion;
 
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.io.*;
 
-public abstract class Configuracion implements Configurar{
+public class Configuracion implements Configurar{
 
     private String ip;
     private int puerto;
     private String nickname;
+
+    public Configuracion(){}
+
+    private static final String path = "configcliente.xml";
 
     public boolean puertoValido(int puerto){
         return (puerto>0 && puerto<65535);
@@ -38,6 +44,53 @@ public abstract class Configuracion implements Configurar{
             ip = address.getHostAddress();
         }
         return ipValida(ip) && puertoValido(this.puerto);
+    }
+
+    @Override
+    public void escribirArchivoConfiguracion(Object... args) throws Exception {
+
+        try {
+            XMLEncoder encoder = null;
+            try {
+                encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(path)));
+            }catch (FileNotFoundException d){
+
+            }
+            encoder.writeObject(this);
+            encoder.close();
+        } catch (Exception e) {
+
+        }
+    }
+
+    @Override
+    public void leerArchivoConfiguracion(Object... args) {
+        try {
+            File file = new File(path);
+            // Si el archivo no existe es creado
+            if (!file.exists()) {
+                file.createNewFile();
+                this.ip = "localhost";     //valores por defecto
+                this.puerto = 1500;
+                this.nickname = "localhost";
+                escribirArchivoConfiguracion();
+            }
+            else {
+                XMLDecoder decoder = null;
+                try {
+                    decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(path)));
+                } catch (Exception e) {
+
+                }
+                Configuracion conf = (Configuracion) decoder.readObject();
+                this.nickname = conf.getNickname();
+                this.puerto = conf.getPuerto();
+                this.ip = conf.getIp();
+            }
+        } catch (Exception e) {
+
+        }
+
     }
 
 
@@ -75,13 +128,12 @@ public abstract class Configuracion implements Configurar{
     }
 
     public void leerArchivo(String path){
-        this.setIp("localhost");
         try {
             File file = new File(path);
             // Si el archivo no existe es creado
             if (!file.exists()) {
                 file.createNewFile();
-                escribirArchivoConfiguracion(this.getIp(), String.valueOf(this.getPuerto()));
+                escribirArchivoConfiguracion(this.ip,this.puerto,this.nickname);
             }
             else {
                 FileReader fw = new FileReader(file);
@@ -95,6 +147,36 @@ public abstract class Configuracion implements Configurar{
         }
     }
 
+    public void leerArchivoXML(String path){
+        try {
+            File file = new File(path);
+            // Si el archivo no existe es creado
+            if (!file.exists()) {
+                file.createNewFile();
+                this.ip = "localhost";     //valores por defecto
+                this.puerto = 1500;
+                this.nickname = "localhost";
+                escribirArchivoXML(path);
+            }
+            else {
+                XMLDecoder decoder = null;
+                try {
+                    decoder = new XMLDecoder(new BufferedInputStream(new FileInputStream(path)));
+                } catch (Exception e) {
+
+                }
+                Configuracion conf = (ConfiguracionCliente) decoder.readObject();
+                this.nickname = conf.getNickname();
+                this.puerto = conf.getPuerto();
+                this.ip = conf.getIp();
+            }
+        } catch (Exception e) {
+
+        }
+
+    }
+
+
     public void escribirArchivo(String path) throws Exception{
         try {
             File file = new File(path);
@@ -106,6 +188,20 @@ public abstract class Configuracion implements Configurar{
             bw.close();
         } catch (IOException e) {
             throw new Exception(e);
+        }
+    }
+    public void escribirArchivoXML(String path) throws Exception{
+        try {
+            XMLEncoder encoder = null;
+            try {
+                encoder = new XMLEncoder(new BufferedOutputStream(new FileOutputStream(path)));
+            }catch (FileNotFoundException d){
+
+            }
+            encoder.writeObject(this);
+            encoder.close();
+        } catch (Exception e) {
+
         }
     }
 

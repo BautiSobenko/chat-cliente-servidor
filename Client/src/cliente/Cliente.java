@@ -20,7 +20,7 @@ import java.security.PublicKey;
 
 public class Cliente implements Runnable, Emision, Recepcion {
 
-    //singleton
+    //singleton 
     private static Cliente cliente = null;
 
     public final Conexion conexion;

@@ -1,5 +1,7 @@
 package vista.vistas;
 
+import configuracion.Configuracion;
+import configuracion.ConfiguracionCliente;
 import vista.interfaces.IVistaConfiguracion;
 
 import java.awt.EventQueue;
@@ -42,10 +44,11 @@ public class VistaRegistro extends JFrame implements IVistaConfiguracion {
 		setBounds(100, 100, 533, 341);
 		JPanel contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+		Configuracion config = new Configuracion();
+		config.leerArchivoConfiguracion();
+
 		JLabel lbl1 = new JLabel("Direccion IP");
 		lbl1.setHorizontalAlignment(SwingConstants.CENTER);
 		lbl1.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -57,6 +60,7 @@ public class VistaRegistro extends JFrame implements IVistaConfiguracion {
 		lblDireccionIP.setFont(new Font("Tahoma", Font.ITALIC, 16));
 		lblDireccionIP.setBounds(72, 60, 285, 29);
 		contentPane.add(lblDireccionIP);
+		lblDireccionIP.setText(config.getIp());
 		
 		JLabel lblIngreseSuPuerto = new JLabel("Ingrese su Puerto");
 		lblIngreseSuPuerto.setHorizontalAlignment(SwingConstants.CENTER);
@@ -69,6 +73,7 @@ public class VistaRegistro extends JFrame implements IVistaConfiguracion {
 		txtPuerto.setBounds(191, 137, 146, 30);
 		contentPane.add(txtPuerto);
 		txtPuerto.setColumns(10);
+		txtPuerto.setText(String.valueOf(config.getPuerto()));
 		
 		this.btnRegistrar = new JButton("Registrar");
 		btnRegistrar.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -85,6 +90,7 @@ public class VistaRegistro extends JFrame implements IVistaConfiguracion {
 		txtNickName.setColumns(10);
 		txtNickName.setBounds(191, 203, 146, 30);
 		contentPane.add(txtNickName);
+		txtNickName.setText(config.getNickname());
 	}
 
 	@Override
