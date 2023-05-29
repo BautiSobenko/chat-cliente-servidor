@@ -120,10 +120,16 @@ public class ControladorInicio implements ActionListener, WindowListener {
     }
 
     public void setListaConectados(ArrayList<clienteConectado> lista) {
-    	
-    	//ArrayList<clienteConectado> listaSinUsuario = (ArrayList<clienteConectado>) lista.stream().filter(e-> e.getPuerto()!=this.miPuerto || e.getNickname()!=this.miNickname);
-    	//vista.setConectados(listaSinUsuario);
-    	vista.setConectados(lista);
+
+        try{
+            lista.removeIf( c -> c.getNickname().equals(this.getMiNickname()) && c.getPuerto() == this.getMiPuerto() );
+
+        }catch( Exception ignored) {
+
+        }finally {
+            vista.setConectados(lista);
+        }
+
     }
 
     public void setMiNickname(String miNickname) {
