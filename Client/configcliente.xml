@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<java version="20" class="java.beans.XMLDecoder">
- <object class="configuracion.ConfiguracionCliente">
+<java version="16.0.2" class="java.beans.XMLDecoder">
+ <object class="configuracion.Configuracion">
   <void property="ip">
-   <string>127.0.1.1</string>
+   <string>192.168.56.1</string>
   </void>
   <void property="nickname">
-   <string>Matias</string>
+   <string>Tibau</string>
   </void>
   <void property="puerto">
-   <int>6666</int>
+   <int>5000</int>
   </void>
  </object>
 </java>

@@ -15,4 +15,6 @@ public interface IVistaConfiguracion {
 	void setLblDireccionIP(String direccionIP);
 	public void setTxtPuerto(String puerto);
 	public String getNickname();
+
+    void setTxtNickname(String nickname);
 }

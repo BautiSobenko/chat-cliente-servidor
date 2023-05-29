@@ -1,10 +1,7 @@
 package vista.vistas;
 
-import configuracion.ConfiguracionCliente;
 import vista.interfaces.IVistaConfiguracion;
 import configuracion.Configuracion;
-
-import java.awt.EventQueue;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -18,25 +15,6 @@ public class VistaConfiguracionPuerto extends JFrame implements IVistaConfigurac
 	private final JButton btnContinuar;
 	private JTextField txtNickname;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VistaConfiguracionPuerto frame = new VistaConfiguracionPuerto();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
 	public VistaConfiguracionPuerto() {
 		setTitle("Configuracion ");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -125,6 +103,11 @@ public class VistaConfiguracionPuerto extends JFrame implements IVistaConfigurac
 	@Override
 	public String getNickname() {
 		return this.txtNickname.getText();
+	}
+
+	@Override
+	public void setTxtNickname(String nickname) {
+		this.txtNickname.setText(nickname);
 	}
 	
 	

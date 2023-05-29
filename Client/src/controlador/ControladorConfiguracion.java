@@ -30,30 +30,29 @@ public class ControladorConfiguracion implements ActionListener, WindowListener 
 		}
 
 		if( mostrar ){
+			controladorConfiguracion.lecturaArchivoConfiguracion();
+			controladorConfiguracion.vista.setTxtPuerto( controladorConfiguracion.getMiPuerto() );
+			controladorConfiguracion.vista.setTxtNickname(controladorConfiguracion.getMiNickname() );
 			controladorConfiguracion.vista.mostrar();
-			controladorConfiguracion.vista.setTxtPuerto(String.valueOf(ConfiguracionCliente.getConfig().getParametros()[1]));
 		}
 
 		return controladorConfiguracion;
     }
+
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
 		try {
 
-			//To-Do: agregar campo nickname por si lo desea cambiar
-			
 			ControladorInicio controladorInicio = ControladorInicio.get(true);
 
-			String IP = "localhost";
+			int miPuerto = vista.getPuerto();
+			String nickname = vista.getNickname();
 
-			if(controladorInicio.getMiPuerto() != vista.getPuerto() ){
 
-				int miPuerto = vista.getPuerto();
-				String nickname = vista.getNickname();
+			if(controladorInicio.getMiPuerto() != miPuerto ){
 
-				ConfiguracionCliente.getConfig().setIp(IP);
 				ConfiguracionCliente.getConfig().setNickname(nickname);
 				ConfiguracionCliente.getConfig().setPuerto(miPuerto);
 
@@ -61,6 +60,7 @@ public class ControladorConfiguracion implements ActionListener, WindowListener 
 
 					ConfiguracionCliente.getConfig().escribirArchivoConfiguracion();
 
+					controladorInicio.setMiNickname(nickname);
 					controladorInicio.setMiPuerto(miPuerto);
 					controladorInicio.startCliente();
 
@@ -68,8 +68,13 @@ public class ControladorConfiguracion implements ActionListener, WindowListener 
 				} else
 					vista.lanzarVentanaEmergente("Error al ingresar IP o Puerto");
 
-			} else
+			} else {
+				if( !controladorInicio.getMiNickname().equals(nickname) ) {
+					ConfiguracionCliente.getConfig().setNickname(nickname);
+					ConfiguracionCliente.getConfig().escribirArchivoConfiguracion();
+				}
 				this.vista.esconder();
+			}
 
 		}catch (RuntimeException exception){
 			vista.lanzarVentanaEmergente("El puerto ingresado ya esta en uso");
@@ -79,6 +84,20 @@ public class ControladorConfiguracion implements ActionListener, WindowListener 
 			vista.lanzarVentanaEmergente("Error al escribir archivo de configuracion");
 		}
 	}
+
+	public String getMiPuerto() {
+		return String.valueOf(ConfiguracionCliente.getConfig().getParametros()[1]);
+	}
+
+	public String getMiNickname() {
+		return ConfiguracionCliente.getConfig().getParametros()[2];
+	}
+
+	public void lecturaArchivoConfiguracion() {
+		ConfiguracionCliente.getConfig().leerArchivoConfiguracion();
+	}
+
+	//! Metodos WindowListener
 
 	@Override
 	public void windowOpened(WindowEvent e) {

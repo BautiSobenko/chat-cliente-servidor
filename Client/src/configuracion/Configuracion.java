@@ -127,9 +127,10 @@ public class Configuracion implements Configurar{
 
 	@Override
     public String[] getParametros() {
-        String[] param = new String[2];
+        String[] param = new String[3];
         param[0] = this.getIp();
         param[1] = String.valueOf(this.getPuerto());
+        param[2] = this.getNickname();
         return param;
     }
 

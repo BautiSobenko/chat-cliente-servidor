@@ -114,7 +114,11 @@ public class ControladorInicio implements ActionListener, WindowListener {
     	this.miPuerto = puerto;
         actualizarTituloVista();
     }
-    
+
+    public String getMiNickname() {
+        return miNickname;
+    }
+
     public void setListaConectados(ArrayList<clienteConectado> lista) {
     	
     	//ArrayList<clienteConectado> listaSinUsuario = (ArrayList<clienteConectado>) lista.stream().filter(e-> e.getPuerto()!=this.miPuerto || e.getNickname()!=this.miNickname);

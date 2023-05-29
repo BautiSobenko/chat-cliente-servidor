@@ -142,4 +142,9 @@ public class VistaRegistro extends JFrame implements IVistaConfiguracion {
 	public String getNickname() {
 		return this.txtNickName.getText();
 	}
+
+	@Override
+	public void setTxtNickname(String nickname) {
+
+	}
 }

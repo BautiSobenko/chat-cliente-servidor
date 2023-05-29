@@ -3,7 +3,6 @@ package configuracion;
 public class ConfiguracionCliente extends Configuracion{
     //singleton
     private static ConfiguracionCliente config = null;
-    private static final String path = "configcliente.xml";
 
     private ConfiguracionCliente(String IP, int puerto,String nickname) {
         super(IP,puerto,nickname);
