@@ -165,13 +165,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
     public boolean registrarCliente(String ipOrigen, int puertoOrigen, String nicknameOrigen) {
 
         boolean existeRegistro = false;
-
-        /*for (Map.Entry<Integer, String> entry : this.registro.entrySet()) {
-            if( entry.getValue().equalsIgnoreCase(ipOrigen) && entry.getKey() == puertoOrigen) {
-                existeRegistro = true;
-                break;
-            }
-        }*/
         
         ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) registros.stream().filter(e -> e.getIp()==ipOrigen && e.getPuerto()==puertoOrigen).collect(Collectors.toList());
 
