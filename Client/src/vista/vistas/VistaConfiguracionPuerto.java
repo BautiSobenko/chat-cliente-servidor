@@ -14,8 +14,9 @@ import java.awt.event.WindowListener;
 
 public class VistaConfiguracionPuerto extends JFrame implements IVistaConfiguracion {
 
-	private final JTextField txtPuerto;
+	private JTextField txtPuerto;
 	private final JButton btnContinuar;
+	private JTextField txtNickname;
 
 	/**
 	 * Launch the application.
@@ -39,20 +40,21 @@ public class VistaConfiguracionPuerto extends JFrame implements IVistaConfigurac
 	public VistaConfiguracionPuerto() {
 		setTitle("Configuracion ");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setBounds(100, 100, 415, 235);
+		setBounds(100, 100, 415, 323);
 		JPanel contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("Ingrese el Puerto que desea utilizar:");
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		lblNewLabel.setBounds(74, 22, 261, 30);
-		contentPane.add(lblNewLabel);
+		JLabel lblPuerto = new JLabel("Ingrese el Puerto que desea utilizar:");
+		lblPuerto.setHorizontalAlignment(SwingConstants.CENTER);
+		lblPuerto.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblPuerto.setBounds(74, 106, 261, 30);
+		contentPane.add(lblPuerto);
 		
 		txtPuerto = new JTextField();
-		txtPuerto.setBounds(120, 63, 159, 30);
+		txtPuerto.setBounds(114, 147, 159, 30);
 		contentPane.add(txtPuerto);
 		txtPuerto.setColumns(10);
 		txtPuerto.setHorizontalAlignment(SwingConstants.CENTER);
@@ -60,8 +62,20 @@ public class VistaConfiguracionPuerto extends JFrame implements IVistaConfigurac
 		
 		btnContinuar = new JButton("Continuar");
 		btnContinuar.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		btnContinuar.setBounds(83, 115, 236, 43);
+		btnContinuar.setBounds(74, 206, 236, 43);
 		contentPane.add(btnContinuar);
+		
+		txtNickname = new JTextField();
+		txtNickname.setHorizontalAlignment(SwingConstants.CENTER);
+		txtNickname.setColumns(10);
+		txtNickname.setBounds(114, 51, 159, 30);
+		contentPane.add(txtNickname);
+		
+		JLabel lblNickname = new JLabel("Ingrese Nickname:");
+		lblNickname.setHorizontalAlignment(SwingConstants.CENTER);
+		lblNickname.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		lblNickname.setBounds(61, 10, 261, 30);
+		contentPane.add(lblNickname);
 
 	}
 
@@ -92,11 +106,6 @@ public class VistaConfiguracionPuerto extends JFrame implements IVistaConfigurac
 	}
 
 	@Override
-	public String getNickname() {
-		return null;
-	}
-
-	@Override
 	public void esconder() {
 		this.setVisible(false);
 	}
@@ -108,7 +117,13 @@ public class VistaConfiguracionPuerto extends JFrame implements IVistaConfigurac
 
 	@Override
 	public void setLblDireccionIP(String direccionIP) {
-
+		
 	}
 
+	@Override
+	public String getNickname() {
+		return this.txtNickname.getText();
+	}
+	
+	
 }
