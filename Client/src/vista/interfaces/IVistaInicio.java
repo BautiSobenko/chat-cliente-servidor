@@ -23,4 +23,6 @@ public interface IVistaInicio {
     void habilitarBotonConexion();
     void tituloInstancia(String ipOrigen, int miPuerto);
     void setConectados(ArrayList<clienteConectado> lista);
+
+    void limpiarConectados();
 }

@@ -124,6 +124,7 @@ public class VistaInicio extends JFrame implements IVistaInicio {
 	public void setActionListener(ActionListener controlador) {
 		this.btnConfiguracion.addActionListener(controlador);
 		this.btnConectar.addActionListener(controlador);
+		this.btnRecargarConectados.addActionListener(controlador);
 	}
 
 	@Override
@@ -183,11 +184,15 @@ public class VistaInicio extends JFrame implements IVistaInicio {
 
 	@Override
 	public void setConectados(ArrayList<clienteConectado> lista) {
-		// TODO Auto-generated method stub
 		this.modelo.removeAllElements();
 		for(int i=0; i<lista.size() ; i++) {
 			this.modelo.addElement(lista.get(i));
 		}
 		this.listaConectados.setModel(this.modelo);
+	}
+
+	@Override
+	public void limpiarConectados() {
+		this.modelo.removeAllElements();
 	}
 }

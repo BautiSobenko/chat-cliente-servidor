@@ -63,7 +63,7 @@ public class Cliente implements Runnable, Emision, Recepcion {
             mensaje.setNicknameOrigen(this.nicknameOrigen);
 
 
-            if( msg.equals("REGISTRO")  || msg.equals("ELIMINA REGISTRO") ) {
+            if( msg.equals("REGISTRO")  || msg.equals("ELIMINA REGISTRO") || msg.equals("RECARGAR CONECTADOS") ) {
                 mensaje.setIpDestino(this.ipOrigen);
                 mensaje.setPuertoDestino(this.puertoOrigen);
                 mensaje.setNicknameOrigen(this.nicknameOrigen);
@@ -79,7 +79,7 @@ public class Cliente implements Runnable, Emision, Recepcion {
             }
 
             //Los mensajes de "Control" no debo cifrarlos
-            if( msg.equals("LLAMADA") || msg.equals("DESCONECTAR") || msg.equals("REGISTRO") || msg.equals("ELIMINA REGISTRO") ) {
+            if( msg.equals("LLAMADA") || msg.equals("DESCONECTAR") || msg.equals("REGISTRO") || msg.equals("ELIMINA REGISTRO") || msg.equals("RECARGAR CONECTADOS") ) {
 
                 if (msg.equals("LLAMADA"))
                     mensaje.setPublicKey(this.rsa.getPublicKey()); //Cuando yo llamo, ya envio mi clave publica (puede aceptarme)
@@ -192,7 +192,9 @@ public class Cliente implements Runnable, Emision, Recepcion {
                 else if (txt.equalsIgnoreCase("OCUPADO")) {
                     ControladorInicio.get(false).error("El contacto al que intenta llamar se encuentra Ocupado");
                 }
-                else {
+                else if( txt.equalsIgnoreCase("RECARGAR CONECTADOS") ){
+                    ControladorInicio.get(true).setListaConectados(mensajeRecibido.getConectados());
+                } else {
                     String mensajeDesencriptado = this.rsa.desencriptar(txt); //Lo desencripto con mi clave privada. El extremo encripto con mi clave publica (enviada)
                     ControladorSesionLlamada.get(false).muestraMensaje(nickname + ": " + mensajeDesencriptado);
                 }

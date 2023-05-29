@@ -63,8 +63,8 @@ public class Servidor implements Runnable, Recepcion, Emision {
             String ipDestino;
             String nicknameDestino = null;
             String msg;
-            int puertoDestino, reenvioLista; //Reenvio lista es una bandera que dice que mensaje enviar
             Mensaje mensaje;
+            int puertoDestino;
 
             while (true) {
 
@@ -96,12 +96,14 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
                         if (this.registrarCliente(ipOrigen, puertoOrigen,nicknameOrigen)) {
                         	msg = "REGISTRO EXITOSO";
-                        	mensaje.setConectados(this.registros);
+                        	mensaje.setConectados(this.getClientesFueraDeSesion());
                         }
                         else
                             msg = "REGISTRO FALLIDO";
 
                         mensaje.setMensaje(msg);
+                    } else if ( msg.equalsIgnoreCase("RECARGAR CONECTADOS") ) {
+                        mensaje.setConectados(this.getClientesFueraDeSesion());
                     }else if( (msg.equalsIgnoreCase("LLAMADA") && verificaConexion(ipDestino, puertoDestino)) ){
                         msg = "OCUPADO";
                         mensaje.setMensaje(msg);
@@ -148,6 +150,24 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
     @Override
     public void enviaMensaje(String msg) {
+
+    }
+
+    public ArrayList<clienteConectado> getClientesFueraDeSesion() {
+
+        ArrayList<clienteConectado> clientesFueraDeSesion = new ArrayList<>();
+
+        for ( clienteConectado clienteRegistrado : this.registros ) {
+
+            boolean enSesion = this.conexiones.stream().anyMatch( c -> c.getIp().equals(clienteRegistrado.getIp()) && clienteRegistrado.getPuerto() == c.getPuerto());
+
+            if( !enSesion )
+                clientesFueraDeSesion.add(clienteRegistrado);
+
+
+        }
+
+        return clientesFueraDeSesion;
 
     }
 
@@ -209,19 +229,15 @@ public class Servidor implements Runnable, Recepcion, Emision {
     }
     
     public void eliminaRegistro(String ip, int puerto) {
-    	
-    	//Guardo todos los que sean distintos
-        ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) registros.stream().filter(e -> e.getIp()!=ip || e.getPuerto()!=puerto).collect(Collectors.toList());
-        
-        this.registros = filtrado;
+
+        this.registros.removeIf( c -> c.getIp().equals(ip) && c.getPuerto() == puerto );
+
     }
     
     public void eliminaConectado(String ip, int puerto) {
-    	
-    	//Guardo todos los que sean distintos
-        ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) conexiones.stream().filter(e -> e.getIp()!=ip || e.getPuerto()!=puerto).collect(Collectors.toList());
-        
-        this.conexiones = filtrado;
+
+        this.conexiones.removeIf( c -> c.getIp().equals(ip) && c.getPuerto() == puerto );
+
     }
     
     

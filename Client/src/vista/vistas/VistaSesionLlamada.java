@@ -22,23 +22,6 @@ public class VistaSesionLlamada extends JFrame implements IVistaSesionLlamada {
 	private final JButton btnDesconectar;
 	private final JTextArea txtArea;
 
-
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VistaSesionLlamada frame = new VistaSesionLlamada();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
 	public VistaSesionLlamada() {
 		setTitle("Sesion");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

@@ -106,6 +106,9 @@ public class ControladorInicio implements ActionListener, WindowListener {
                 } else
                     this.vista.error("No se puede comunicar con su mismo puerto");
             }
+            case "Recargar Conectados" -> {
+                this.cliente.enviaMensaje("RECARGAR CONECTADOS");
+            }
         }
 
     }
@@ -119,11 +122,14 @@ public class ControladorInicio implements ActionListener, WindowListener {
         return miNickname;
     }
 
+    public void limpiarConectados() {
+        this.vista.limpiarConectados();
+    }
+
     public void setListaConectados(ArrayList<clienteConectado> lista) {
 
         try{
             lista.removeIf( c -> c.getNickname().equals(this.getMiNickname()) && c.getPuerto() == this.getMiPuerto() );
-
         }catch( Exception ignored) {
 
         }finally {
@@ -158,6 +164,8 @@ public class ControladorInicio implements ActionListener, WindowListener {
     public void windowClosing(WindowEvent e) {
         try {
             this.cliente.enviaMensaje("ELIMINA REGISTRO");
+            this.limpiarConectados();
+
             System.exit(0);
         }
         catch(Exception i) {
