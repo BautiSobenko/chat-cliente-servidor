@@ -56,7 +56,7 @@ public class Configuracion implements Configurar{
             }catch (FileNotFoundException d){
 
             }
-            encoder.writeObject(this);
+            encoder.writeObject((Configuracion)this);
             encoder.close();
         } catch (Exception e) {
 

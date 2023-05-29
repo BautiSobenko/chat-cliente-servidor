@@ -53,11 +53,13 @@ public class ControladorConfiguracion implements ActionListener, WindowListener 
 				int miPuerto = vista.getPuerto();
 				String nickname = vista.getNickname();
 
-				ConfiguracionCliente configuracionCliente = ConfiguracionCliente.getConfig(IP, miPuerto, nickname);
+				ConfiguracionCliente.getConfig().setIp(IP);
+				ConfiguracionCliente.getConfig().setNickname(nickname);
+				ConfiguracionCliente.getConfig().setPuerto(miPuerto);
 
-				if (configuracionCliente.validarConfiguracion()){
+				if (ConfiguracionCliente.getConfig().validarConfiguracion()){
 
-					configuracionCliente.escribirArchivoConfiguracion();
+					ConfiguracionCliente.getConfig().escribirArchivoConfiguracion();
 
 					controladorInicio.setMiPuerto(miPuerto);
 					controladorInicio.startCliente();

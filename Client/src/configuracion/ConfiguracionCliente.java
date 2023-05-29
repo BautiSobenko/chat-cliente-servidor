@@ -13,7 +13,7 @@ public class ConfiguracionCliente extends Configuracion{
     }
 
     public ConfiguracionCliente() {
-        leerArchivoConfiguracion();
+        super.leerArchivoConfiguracion();
     }
 
     public static ConfiguracionCliente getConfig(){

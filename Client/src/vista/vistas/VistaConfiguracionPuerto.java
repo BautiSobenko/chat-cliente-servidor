@@ -58,8 +58,8 @@ public class VistaConfiguracionPuerto extends JFrame implements IVistaConfigurac
 		contentPane.add(txtPuerto);
 		txtPuerto.setColumns(10);
 		txtPuerto.setHorizontalAlignment(SwingConstants.CENTER);
-		txtPuerto.setText(String.valueOf(ConfiguracionCliente.getConfig().getParametros()[1]));
-		
+		txtPuerto.setText(String.valueOf(ConfiguracionCliente.getConfig().getPuerto()));
+		System.out.println(ConfiguracionCliente.getConfig().getPuerto());
 		btnContinuar = new JButton("Continuar");
 		btnContinuar.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		btnContinuar.setBounds(74, 206, 236, 43);
@@ -70,6 +70,7 @@ public class VistaConfiguracionPuerto extends JFrame implements IVistaConfigurac
 		txtNickname.setColumns(10);
 		txtNickname.setBounds(114, 51, 159, 30);
 		contentPane.add(txtNickname);
+		txtNickname.setText(ConfiguracionCliente.getConfig().getNickname());
 		
 		JLabel lblNickname = new JLabel("Ingrese Nickname:");
 		lblNickname.setHorizontalAlignment(SwingConstants.CENTER);
