@@ -8,7 +8,7 @@
    <string>42</string>
   </void>
   <void property="puerto">
-   <int>7000</int>
+   <int>3000</int>
   </void>
  </object>
 </java>

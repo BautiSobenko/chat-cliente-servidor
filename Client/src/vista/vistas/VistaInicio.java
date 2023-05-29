@@ -104,7 +104,7 @@ public class VistaInicio extends JFrame implements IVistaInicio {
 		listaConectados = new JList();
 		listaConectados.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
-				clienteConectado clienteElegido = (clienteConectado) modelo.get(e.getFirstIndex());
+				clienteConectado clienteElegido = (clienteConectado) modelo.get(e.getLastIndex());
 				txtIP.setText(clienteElegido.getIp());
 				txtPuerto.setText(Integer.toString(clienteElegido.getPuerto()));
 			}
