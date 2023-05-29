@@ -6,14 +6,11 @@ public class ConfiguracionCliente extends Configuracion{
     private static final String path = "configcliente.xml";
 
     private ConfiguracionCliente(String IP, int puerto,String nickname) {
-        super.setIp(IP);
-        super.setPuerto(puerto);
-        super.setNickname(nickname);
-        leerArchivoConfiguracion();
+        super(IP,puerto,nickname);
     }
 
     public ConfiguracionCliente() {
-        super.leerArchivoConfiguracion();
+        super();
     }
 
     public static ConfiguracionCliente getConfig(){
@@ -27,16 +24,6 @@ public class ConfiguracionCliente extends Configuracion{
             config = new ConfiguracionCliente(IP, puerto,nickname);
         return config;
     }
-
-    @Override
-    public void escribirArchivoConfiguracion(Object... args) throws Exception{
-        super.escribirArchivoXML(path);
-    }
-    @Override
-    public void leerArchivoConfiguracion(Object... args) {
-        super.leerArchivoXML(path);
-    }
-
 
 
 }

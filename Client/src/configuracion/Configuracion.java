@@ -9,13 +9,18 @@ import java.io.*;
 
 public class Configuracion implements Configurar{
 
+    private static final String path = "configcliente.xml";
     private String ip;
     private int puerto;
     private String nickname;
 
     public Configuracion(){}
 
-    private static final String path = "configcliente.xml";
+    public Configuracion(String ip, int puerto, String nick){
+        this.ip = ip;
+        this.puerto = puerto;
+        this.nickname = nick;
+    }
 
     public boolean puertoValido(int puerto){
         return (puerto>0 && puerto<65535);
@@ -86,6 +91,7 @@ public class Configuracion implements Configurar{
                 this.nickname = conf.getNickname();
                 this.puerto = conf.getPuerto();
                 this.ip = conf.getIp();
+                decoder.close();
             }
         } catch (Exception e) {
 
