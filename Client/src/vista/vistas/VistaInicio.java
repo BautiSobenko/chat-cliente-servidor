@@ -23,38 +23,18 @@ import javax.swing.event.ListSelectionListener;
 
 import mensaje.clienteConectado;
 
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.DefaultListModel;
 
 public class VistaInicio extends JFrame implements IVistaInicio {
 
-	private JTextField txtPuerto;
 	private final JButton btnConfiguracion;
 	private final JButton btnConectar;
 	private final JButton btnRecargarConectados;
+	private final JTextField txtPuerto;
 	private final JTextField txtIP;
 	private JList<clienteConectado> listaConectados;
-	private DefaultListModel modelo = new DefaultListModel();
+	private DefaultListModel modelo;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VistaInicio frame = new VistaInicio();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
 	public VistaInicio() {
 		setTitle("Inicio");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -102,13 +82,6 @@ public class VistaInicio extends JFrame implements IVistaInicio {
 		contentPane.add(txtIP);
 		
 		listaConectados = new JList();
-		listaConectados.addListSelectionListener(new ListSelectionListener() {
-			public void valueChanged(ListSelectionEvent e) {
-				clienteConectado clienteElegido = (clienteConectado) modelo.get(e.getLastIndex());
-				txtIP.setText(clienteElegido.getIp());
-				txtPuerto.setText(Integer.toString(clienteElegido.getPuerto()));
-			}
-		});
 		listaConectados.setBounds(32, 23, 576, 288);
 		contentPane.add(listaConectados);
 		
@@ -125,6 +98,11 @@ public class VistaInicio extends JFrame implements IVistaInicio {
 		this.btnConfiguracion.addActionListener(controlador);
 		this.btnConectar.addActionListener(controlador);
 		this.btnRecargarConectados.addActionListener(controlador);
+	}
+
+	@Override
+	public void setListListener(ListSelectionListener controlador){
+		this.listaConectados.addListSelectionListener(controlador);
 	}
 
 	@Override
@@ -184,15 +162,24 @@ public class VistaInicio extends JFrame implements IVistaInicio {
 
 	@Override
 	public void setConectados(ArrayList<clienteConectado> lista) {
-		this.modelo.removeAllElements();
-		for(int i=0; i<lista.size() ; i++) {
-			this.modelo.addElement(lista.get(i));
-		}
+		this.modelo = new DefaultListModel();
+
+		lista.forEach( elem -> this.modelo.addElement(elem) );
+
 		this.listaConectados.setModel(this.modelo);
 	}
 
 	@Override
 	public void limpiarConectados() {
 		this.modelo.removeAllElements();
+	}
+
+	@Override
+	public void setTxtIP(String ip) {
+		this.txtIP.setText(ip);
+	}
+	@Override
+	public void setTxtPuerto(String puerto) {
+		this.txtPuerto.setText(puerto);
 	}
 }

@@ -172,14 +172,10 @@ public class Servidor implements Runnable, Recepcion, Emision {
     }
 
     public boolean verificaConexion(String ipDestino, int puertoDestino) {
-        boolean conexionExistente = false;
-        
-        ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) conexiones.stream().filter(e -> e.getIp()==ipDestino && e.getPuerto()==puertoDestino).collect(Collectors.toList());
 
-        if(filtrado.size()>0)
-        	conexionExistente = true;
-        
-        return conexionExistente;
+        Optional<clienteConectado> opt = this.conexiones.stream().filter( e -> e.getIp().equals(ipDestino) && e.getPuerto() == puertoDestino ).findFirst();
+
+        return opt.isPresent();
     }
 
     public boolean registrarCliente(String ipOrigen, int puertoOrigen, String nicknameOrigen) {

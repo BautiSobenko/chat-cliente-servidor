@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <java version="16.0.2" class="java.beans.XMLDecoder">
- <object class="configuracion.Configuracion">
+ <object class="configuracion.ConfiguracionCliente">
   <void property="ip">
    <string>192.168.56.1</string>
   </void>
@@ -8,7 +8,7 @@
    <string>42</string>
   </void>
   <void property="puerto">
-   <int>3000</int>
+   <int>14000</int>
   </void>
  </object>
 </java>
