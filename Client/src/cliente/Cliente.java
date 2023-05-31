@@ -1,15 +1,13 @@
 package cliente;
 
 import conexion.Conexion;
-import controlador.ControladorInicio;
-import controlador.ControladorRecepcionLlamada;
-import controlador.ControladorRegistro;
-import controlador.ControladorSesionLlamada;
+import controlador.*;
 
 import encriptacion.Encriptacion;
 import encriptacion.RSA;
 import mensaje.Mensaje;
 
+import javax.naming.ldap.Control;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -149,7 +147,6 @@ public class Cliente implements Runnable, Emision, Recepcion {
     public void run() {
 
         try {
-            System.out.println(this.puertoOrigen);
             this.conexion.establecerConexion(this.puertoOrigen);
 
             String ipO, txt, nickname;
@@ -201,6 +198,16 @@ public class Cliente implements Runnable, Emision, Recepcion {
                 }
                 else if (txt.equalsIgnoreCase("REGISTRO FALLIDO")) {
                     ControladorRegistro.get(false).registroCliente(false,mensajeRecibido.getConectados());
+
+                    //Si el registro falla, debo mantener los cambios previos a esa configuracion
+                    //TO-DO Habria que hacer un nuevo mensaje de actualizar configuracion
+                    //Ya que el Registro y configuracion se comportan diferente
+
+                    /*
+                    ControladorInicio.get(false).setMiPuerto(ControladorConfiguracion.get(false).getPuertoAntiguo());
+                    ControladorInicio.get(false).setMiNickname(ControladorConfiguracion.get(false).getNicknameAntiguo());
+                    ControladorInicio.get(false).actualizarTituloVista();
+                     */
                 }
                 else if (txt.equalsIgnoreCase("ERROR LLAMADA")) {
                     ControladorInicio.get(true).error("Error en la conexion");

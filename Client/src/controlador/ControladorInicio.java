@@ -42,7 +42,6 @@ public class ControladorInicio implements ActionListener, WindowListener {
         hiloCliente.start();
 
         this.cliente.enviaMensaje("REGISTRO");
-        //this.cliente.enviaMensaje("RECARGAR CONECTADOS");
 
     }
 
@@ -172,6 +171,10 @@ public class ControladorInicio implements ActionListener, WindowListener {
         catch(Exception i) {
             System.exit(0);
         }
+    }
+
+    public Cliente getCliente() {
+        return cliente;
     }
 
     @Override

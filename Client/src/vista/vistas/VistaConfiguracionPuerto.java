@@ -68,8 +68,9 @@ public class VistaConfiguracionPuerto extends JFrame implements IVistaConfigurac
 		this.addWindowListener(controlador);
 	}
 
+	@Override
 	public String getIP() {
-		return "";
+		return null;
 	}
 
 	public int getPuerto() {

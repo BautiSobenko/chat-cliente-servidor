@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import configuracion.ConfiguracionCliente;
@@ -18,6 +19,9 @@ public class ControladorConfiguracion implements ActionListener, WindowListener 
 
 	private final IVistaConfiguracion vista;
 
+	private int puertoAntiguo;
+	private String nicknameAntiguo;
+
 	private ControladorConfiguracion() {
 		this.vista = new VistaConfiguracionPuerto();
 		this.vista.setActionListener(this);
@@ -30,9 +34,8 @@ public class ControladorConfiguracion implements ActionListener, WindowListener 
 		}
 
 		if( mostrar ){
-			controladorConfiguracion.lecturaArchivoConfiguracion();
-			controladorConfiguracion.vista.setTxtPuerto( controladorConfiguracion.getMiPuerto() );
-			controladorConfiguracion.vista.setTxtNickname(controladorConfiguracion.getMiNickname() );
+			controladorConfiguracion.vista.setTxtPuerto( String.valueOf(ControladorInicio.get(false).getMiPuerto() ) );
+			controladorConfiguracion.vista.setTxtNickname( ControladorInicio.get(false).getMiNickname() );
 			controladorConfiguracion.vista.mostrar();
 		}
 
@@ -47,14 +50,24 @@ public class ControladorConfiguracion implements ActionListener, WindowListener 
 
 			ControladorInicio controladorInicio = ControladorInicio.get(true);
 
+			this.puertoAntiguo = controladorInicio.getMiPuerto();
+			this.nicknameAntiguo = controladorInicio.getMiNickname();
+
+			InetAddress adress = InetAddress.getLocalHost();
+			String ip = adress.getHostAddress();
+
 			int miPuerto = vista.getPuerto();
 			String nickname = vista.getNickname();
 
 
-			if(controladorInicio.getMiPuerto() != miPuerto ){
+			if( controladorInicio.getMiPuerto() != miPuerto ){
+
+				//Elimino del server unicamente si mi puerto cambio
+				controladorInicio.getCliente().enviaMensaje("ELIMINA REGISTRO");
 
 				ConfiguracionCliente.getConfig().setNickname(nickname);
 				ConfiguracionCliente.getConfig().setPuerto(miPuerto);
+				ConfiguracionCliente.getConfig().setIp(ip);
 
 				if (ConfiguracionCliente.getConfig().validarConfiguracion()){
 
@@ -69,12 +82,15 @@ public class ControladorConfiguracion implements ActionListener, WindowListener 
 					vista.lanzarVentanaEmergente("Error al ingresar IP o Puerto");
 
 			} else {
+
 				if( !controladorInicio.getMiNickname().equals(nickname) ) {
 					ConfiguracionCliente.getConfig().setNickname(nickname);
 					ConfiguracionCliente.getConfig().escribirArchivoConfiguracion();
 				}
 				this.vista.esconder();
 			}
+
+
 
 		}catch (RuntimeException exception){
 			vista.lanzarVentanaEmergente("El puerto ingresado ya esta en uso");
@@ -95,6 +111,14 @@ public class ControladorConfiguracion implements ActionListener, WindowListener 
 
 	public void lecturaArchivoConfiguracion() {
 		ConfiguracionCliente.getConfig().leerArchivoConfiguracion();
+	}
+
+	public int getPuertoAntiguo() {
+		return puertoAntiguo;
+	}
+
+	public String getNicknameAntiguo() {
+		return nicknameAntiguo;
 	}
 
 	//! Metodos WindowListener

@@ -58,7 +58,6 @@ public class ControladorRegistro implements ActionListener {
 
                 if ( config.validarConfiguracion() ) {
 
-                    //To-Do: actualizar para que escriba y levante el nickname
                     config.escribirArchivoConfiguracion();
 
                     controladorInicio.setMiPuerto(this.vista.getPuerto());
