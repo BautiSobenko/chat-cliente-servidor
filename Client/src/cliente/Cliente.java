@@ -56,33 +56,33 @@ public class Cliente implements Runnable, Emision, Recepcion {
 
             Mensaje mensaje = new Mensaje();
 
-            InetAddress adress = InetAddress.getLocalHost(); //Obtengo la ip origen (Informacion extra)
+            //Obtengo la ip origen (Informacion extra)
+            InetAddress adress = InetAddress.getLocalHost();
             this.ipOrigen = adress.getHostAddress();
-            mensaje.setPuertoOrigen(this.puertoOrigen);
-            mensaje.setIpOrigen(this.ipOrigen);
-            mensaje.setNicknameOrigen(this.nicknameOrigen);
 
+            mensaje.setIpOrigen(this.ipOrigen);
+            mensaje.setPuertoOrigen(this.puertoOrigen);
+            mensaje.setNicknameOrigen(this.nicknameOrigen);
 
             if( msg.equals("REGISTRO")  || msg.equals("ELIMINA REGISTRO") || msg.equals("RECARGAR CONECTADOS") ) {
                 mensaje.setIpDestino(this.ipOrigen);
                 mensaje.setPuertoDestino(this.puertoOrigen);
-                mensaje.setNicknameOrigen(this.nicknameOrigen);
             }else {
-
-                if( this.ipDestino.equals("localhost") ) //Si es "localhost", debo trabajo con la IP real, no con la String "localhost"
+                //Si es "localhost", trabajo con la IP real, no con la String "localhost"
+                if( this.ipDestino.equals("localhost") )
                     mensaje.setIpDestino(adress.getHostAddress());
                 else
                     mensaje.setIpDestino(this.ipDestino);
 
                 mensaje.setPuertoDestino(this.puertoDestino);
-
             }
 
             //Los mensajes de "Control" no debo cifrarlos
             if( msg.equals("LLAMADA") || msg.equals("DESCONECTAR") || msg.equals("REGISTRO") || msg.equals("ELIMINA REGISTRO") || msg.equals("RECARGAR CONECTADOS") ) {
 
-                if (msg.equals("LLAMADA"))
+                if (msg.equals("LLAMADA")){
                     mensaje.setPublicKey(this.rsa.getPublicKey()); //Cuando yo llamo, ya envio mi clave publica (puede aceptarme)
+                }
 
                 mensaje.setMensaje(msg);
             }else
@@ -91,7 +91,6 @@ public class Cliente implements Runnable, Emision, Recepcion {
 
             ObjectOutputStream out = this.conexion.getOutputStreamConexion();//new ObjectOutputStream(sCliente.getOutputStream());
             out.writeObject(mensaje);
-
             out.close();
 
             conexion.cerrarConexion();
@@ -103,7 +102,7 @@ public class Cliente implements Runnable, Emision, Recepcion {
     }
 
 
-    public void enviaMensaje(String msg, String ipDestino, int puertoDestino) {
+    public void enviaMensaje(String msg, String ipDestino, int puertoDestino, String nicknameDestino) {
         try {
             this.conexion.crearConexionEnvio(ipServer, this.puertoServidor);
 
@@ -112,22 +111,29 @@ public class Cliente implements Runnable, Emision, Recepcion {
             InetAddress adress = InetAddress.getLocalHost(); //Obtengo la ip origen (Informacion extra)
             this.ipOrigen = adress.getHostAddress();
 
+
             if (msg.equalsIgnoreCase("LLAMADA ACEPTADA")) {
 
                 this.puertoDestino = puertoDestino;
                 this.ipDestino = ipDestino;
+                this.nicknameDestino = nicknameDestino;
 
-                mensaje.setPublicKey(this.rsa.getPublicKey()); //Acepte la llamada, le envio mi clave publica al extremo para comenzar a intercambiar mensajes
                 mensaje.setPuertoDestino(puertoDestino);
                 mensaje.setIpDestino(ipDestino);
-                mensaje.setMensaje(msg);
+                mensaje.setNicknameDestino(nicknameDestino);
+
                 mensaje.setIpOrigen(this.ipOrigen);
                 mensaje.setPuertoOrigen(this.puertoOrigen);
+                mensaje.setNicknameOrigen(this.nicknameOrigen);
+
+                mensaje.setPublicKey(this.rsa.getPublicKey()); //Acepte la llamada, le envio mi clave publica al extremo para comenzar a intercambiar mensajes
+
+                mensaje.setMensaje(msg);
+
             }
 
             ObjectOutputStream out = this.conexion.getOutputStreamConexion(); //new ObjectOutputStream(sCliente.getOutputStream());
             out.writeObject(mensaje);
-
             out.close();
 
             conexion.cerrarConexion();
@@ -143,9 +149,11 @@ public class Cliente implements Runnable, Emision, Recepcion {
     public void run() {
 
         try {
+            System.out.println(this.puertoOrigen);
             this.conexion.establecerConexion(this.puertoOrigen);
 
-            String ipD, ipO, txt,nickname;
+            String ipO, txt, nickname;
+            int puertoO;
             Mensaje mensajeRecibido;
 
             while (true) {
@@ -154,18 +162,25 @@ public class Cliente implements Runnable, Emision, Recepcion {
 
                 mensajeRecibido = this.recibeMensaje();
 
-                txt = mensajeRecibido.getMensaje();
+                puertoO = mensajeRecibido.getPuertoOrigen();
                 ipO = mensajeRecibido.getIpOrigen();
-                ipD = mensajeRecibido.getIpDestino();
                 nickname = mensajeRecibido.getNicknameOrigen();
+
+                txt = mensajeRecibido.getMensaje();
+
+                System.out.println("Mensaje recibido: " + txt);
 
                 if (txt.equalsIgnoreCase("LLAMADA")) {
                     ControladorRecepcionLlamada controladorRecepcionLlamada = ControladorRecepcionLlamada.get(false);
-                    controladorRecepcionLlamada.setIpOrigen(ipD);
-                    controladorRecepcionLlamada.setIpDestino(ipO); //IP Del que me envio ese mensaje
-                    controladorRecepcionLlamada.setPuertoDestino(mensajeRecibido.getPuertoOrigen()); //Puerto Del que me envio ese mensaje
+
+                    //Posible respuesta al que me envio la llamada
+                    controladorRecepcionLlamada.setPuertoDestino(puertoO);
+                    controladorRecepcionLlamada.setNicknameDestino(nickname);
+                    controladorRecepcionLlamada.setIpDestino(ipO);
+
                     controladorRecepcionLlamada.actualizarLabelIP(ipO,nickname);
                     ControladorRecepcionLlamada.get(true);
+
                     this.publicKeyExtremo = mensajeRecibido.getPublicKey(); //Recibo clave publica del extremo (puedo aceptar la llamada)
                 }
                 else if (txt.equalsIgnoreCase("LLAMADA ACEPTADA")) {
@@ -176,7 +191,8 @@ public class Cliente implements Runnable, Emision, Recepcion {
                 else if (txt.equalsIgnoreCase("DESCONECTAR")) {
                     ControladorSesionLlamada.get(false).esconderVista();
                     ControladorSesionLlamada.get(false).borrarHistorial();
-                    ControladorInicio.get(true).limpiarCampos();
+                    ControladorInicio.get(false).limpiarCampos();
+                    ControladorInicio.get(true).setListaConectados(mensajeRecibido.getConectados());
                     this.publicKeyExtremo = null;
                 }
                 else if (txt.equalsIgnoreCase("REGISTRO EXITOSO")) {
@@ -203,8 +219,8 @@ public class Cliente implements Runnable, Emision, Recepcion {
 
             }
 
-        } catch (Exception ignored) {
-
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
 

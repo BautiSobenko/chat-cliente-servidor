@@ -22,11 +22,11 @@ public interface IVistaInicio {
     void mostrar();
     void esconder();
     void error(String mensaje);
-    void deshabilitarBotonConexion();
-    void habilitarBotonConexion();
     void tituloInstancia(String ipOrigen, int miPuerto);
     void setConectados(ArrayList<clienteConectado> lista);
+
     void limpiarConectados();
     void setTxtIP(String ip);
     void setTxtPuerto(String puerto);
+
 }

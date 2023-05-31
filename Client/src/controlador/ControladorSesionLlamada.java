@@ -67,10 +67,10 @@ public class ControladorSesionLlamada implements ActionListener, WindowListener 
             }
             case ("Desconectar") -> {
                 Cliente.getCliente().enviaMensaje("DESCONECTAR");
+                //Cliente.getCliente().enviaMensaje("RECARGAR CONECTADOS");
                 this.esconderVista();
                 this.borrarHistorial();
                 ControladorInicio.get(true).limpiarCampos();
-                //Cliente.getCliente().enviaMensaje("RECARGAR CONECTADOS");
             }
         }
     }

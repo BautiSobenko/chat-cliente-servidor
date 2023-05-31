@@ -2,8 +2,6 @@ package vista.vistas;
 
 import vista.interfaces.IVistaInicio;
 
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -11,7 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
@@ -19,6 +17,7 @@ import java.util.ArrayList;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.JButton;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import mensaje.clienteConectado;
@@ -82,6 +81,17 @@ public class VistaInicio extends JFrame implements IVistaInicio {
 		contentPane.add(txtIP);
 		
 		listaConectados = new JList();
+		listaConectados.addListSelectionListener(new ListSelectionListener() {
+			public void valueChanged(ListSelectionEvent e) {
+				JList L = (JList) e.getSource();
+				clienteConectado clienteElegido = (clienteConectado) L.getSelectedValue();
+				if (clienteElegido != null) {
+					txtIP.setText(clienteElegido.getIp());
+					txtPuerto.setText(String.valueOf(clienteElegido.getPuerto()));
+				}
+				L.clearSelection();
+			}
+		});
 		listaConectados.setBounds(32, 23, 576, 288);
 		contentPane.add(listaConectados);
 		
@@ -147,17 +157,9 @@ public class VistaInicio extends JFrame implements IVistaInicio {
 		JOptionPane.showMessageDialog(this,mensaje,"Error",JOptionPane.ERROR_MESSAGE);
 	}
 
-	public void habilitarBotonConexion(){
-		this.btnConectar.setEnabled(true);
-	}
-
 	@Override
 	public void tituloInstancia(String ipOrigen, int puerto) {
 		this.setTitle("IP: " + ipOrigen + " | Puerto: " + puerto);
-	}
-
-	public void deshabilitarBotonConexion(){
-		this.btnConectar.setEnabled(false);
 	}
 
 	@Override

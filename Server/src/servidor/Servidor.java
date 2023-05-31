@@ -68,17 +68,18 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
             while (true) {
 
-                //Acepto conexion, me crea un Socket
                 conexion.aceptarConexion();
 
                 mensaje = this.recibeMensaje();
 
                 puertoDestino = mensaje.getPuertoDestino();
+                ipDestino = mensaje.getIpDestino();
+                nicknameDestino = mensaje.getNicknameDestino();
+
                 puertoOrigen = mensaje.getPuertoOrigen();
                 ipOrigen = mensaje.getIpOrigen();
-                ipDestino = mensaje.getIpDestino();
                 nicknameOrigen = mensaje.getNicknameOrigen();
-                nicknameDestino = mensaje.getNicknameDestino();
+
                 msg = mensaje.getMensaje();
 
                 if( msg.equals("ELIMINA REGISTRO") ) {
@@ -87,11 +88,12 @@ public class Servidor implements Runnable, Recepcion, Emision {
                 }else {
 
                     if (msg.equalsIgnoreCase("LLAMADA ACEPTADA")) {
-                        this.agregaConectado(ipOrigen,puertoOrigen,nicknameOrigen);
-                        this.agregaConectado(ipDestino,puertoDestino,nicknameDestino);
+                        this.agregaConectado(ipOrigen, puertoOrigen, nicknameOrigen);
+                        this.agregaConectado(ipDestino, puertoDestino, nicknameDestino);
                     } else if (msg.equalsIgnoreCase("DESCONECTAR")) {
                         this.eliminaConectado(ipOrigen, puertoOrigen);
                         this.eliminaConectado(ipDestino, puertoDestino);
+                        mensaje.setConectados(this.getClientesFueraDeSesion());
                     } else if (msg.equalsIgnoreCase("REGISTRO")) {
 
                         if (this.registrarCliente(ipOrigen, puertoOrigen,nicknameOrigen)) {
@@ -116,7 +118,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
                     ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
 
-                    	out.writeObject(mensaje);
+                    out.writeObject(mensaje);
                 }
 
                 this.conexion.cerrarConexion();
@@ -182,7 +184,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
         boolean existeRegistro = false;
         
-        ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) registros.stream().filter(e -> e.getIp()==ipOrigen && e.getPuerto()==puertoOrigen).collect(Collectors.toList());
+        ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) registros.stream().filter(e -> Objects.equals(e.getIp(), ipOrigen) && e.getPuerto()==puertoOrigen).collect(Collectors.toList());
 
         if(filtrado.size()>0)
         	existeRegistro = true;
@@ -211,17 +213,10 @@ public class Servidor implements Runnable, Recepcion, Emision {
     }
     
     public void agregaConectado(String ip, int puerto,String nickname) {
-    	boolean noExiste = true;
-    	
-    	ArrayList<clienteConectado> filtrado = (ArrayList<clienteConectado>) conexiones.stream().filter(e -> e.getIp()==ip && e.getPuerto()==puerto).collect(Collectors.toList());
 
-        if(filtrado.size()>0)
-        	noExiste = false;
-        
-        if( noExiste ){
-        	clienteConectado cliente = new clienteConectado(ip,puerto,nickname);
-            this.conexiones.add(cliente);
-        }
+        clienteConectado cliente = new clienteConectado(ip,puerto,nickname);
+        this.conexiones.add(cliente);
+
     }
     
     public void eliminaRegistro(String ip, int puerto) {

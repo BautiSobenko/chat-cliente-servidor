@@ -6,9 +6,6 @@ import mensaje.clienteConectado;
 import vista.interfaces.IVistaInicio;
 import vista.vistas.VistaInicio;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -17,7 +14,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-public class ControladorInicio implements ActionListener, WindowListener, ListSelectionListener {
+public class ControladorInicio implements ActionListener, WindowListener {
 
     private static ControladorInicio controladorInicio = null;
 
@@ -30,7 +27,6 @@ public class ControladorInicio implements ActionListener, WindowListener, ListSe
         this.vista = new VistaInicio();
         this.vista.setActionListener(this);
         this.vista.setWindowListener(this);
-        this.vista.setListListener(this);
     }
 
     public void startCliente() {
@@ -46,6 +42,7 @@ public class ControladorInicio implements ActionListener, WindowListener, ListSe
         hiloCliente.start();
 
         this.cliente.enviaMensaje("REGISTRO");
+        //this.cliente.enviaMensaje("RECARGAR CONECTADOS");
 
     }
 
@@ -202,11 +199,4 @@ public class ControladorInicio implements ActionListener, WindowListener, ListSe
 
     }
 
-    @Override
-    public void valueChanged(ListSelectionEvent e) {
-        JList L = (JList) e.getSource();
-        clienteConectado clienteElegido = (clienteConectado) L.getSelectedValue();
-        this.vista.setTxtIP(clienteElegido.getIp());
-        this.vista.setTxtPuerto(String.valueOf(clienteElegido.getPuerto()));
-    }
 }

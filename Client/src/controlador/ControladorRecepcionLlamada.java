@@ -10,11 +10,9 @@ import java.awt.event.ActionListener;
 public class ControladorRecepcionLlamada implements ActionListener {
 
     private static ControladorRecepcionLlamada controladorRecepcionLlamada = null;
-
     private final IVistaRecepcionLlamada vista;
-    private String ipDestino, nicknameDestino;
-    private String ipOrigen;
-    private int puertoOrigen;
+    private String ipDestino;
+    private String nicknameDestino;
     private int puertoDestino;
 
     private ControladorRecepcionLlamada() {
@@ -26,7 +24,6 @@ public class ControladorRecepcionLlamada implements ActionListener {
         if( controladorRecepcionLlamada == null ) {
             controladorRecepcionLlamada = new ControladorRecepcionLlamada();
         }
-
 
         if( mostrar ){
             controladorRecepcionLlamada.vista.mostrar();
@@ -46,7 +43,7 @@ public class ControladorRecepcionLlamada implements ActionListener {
 
         switch (comando) {
             case ("Aceptar") -> {
-                Cliente.getCliente().enviaMensaje("LLAMADA ACEPTADA", this.ipDestino, this.puertoDestino);
+                Cliente.getCliente().enviaMensaje("LLAMADA ACEPTADA", this.ipDestino, this.puertoDestino, this.nicknameDestino);
                 this.vista.esconder();
                 ControladorInicio.get(false);
                 ControladorSesionLlamada.get(true);
@@ -58,41 +55,13 @@ public class ControladorRecepcionLlamada implements ActionListener {
         }
     }
 
-    public String getIpDestino() {
-        return ipDestino;
-    }
-
     public void setIpDestino(String ipDestino) {
         this.ipDestino = ipDestino;
-    }
-
-    public int getPuertoDestino() {
-        return puertoDestino;
     }
 
     public void setPuertoDestino(int puertoDestino) {
         this.puertoDestino = puertoDestino;
     }
-
-    public String getIpOrigen() {
-        return ipOrigen;
-    }
-
-    public void setIpOrigen(String ipOrigen) {
-        this.ipOrigen = ipOrigen;
-    }
-
-    public int getPuertoOrigen() {
-        return puertoOrigen;
-    }
-
-    public void setPuertoOrigen(int puertoOrigen) {
-        this.puertoOrigen = puertoOrigen;
-    }
-
-	public String getNicknameDestino() {
-		return nicknameDestino;
-	}
 
 	public void setNicknameDestino(String nicknameDestino) {
 		this.nicknameDestino = nicknameDestino;
