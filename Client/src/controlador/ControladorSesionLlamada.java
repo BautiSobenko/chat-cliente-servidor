@@ -70,6 +70,7 @@ public class ControladorSesionLlamada implements ActionListener, WindowListener 
                 this.esconderVista();
                 this.borrarHistorial();
                 ControladorInicio.get(true).limpiarCampos();
+                //Cliente.getCliente().enviaMensaje("RECARGAR CONECTADOS");
             }
         }
     }

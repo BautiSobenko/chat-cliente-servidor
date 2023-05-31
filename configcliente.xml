@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="17.0.6" class="java.beans.XMLDecoder">
+ <object class="configuracion.Configuracion">
+  <void property="ip">
+   <string>192.168.0.15</string>
+  </void>
+  <void property="nickname">
+   <string>Agus</string>
+  </void>
+  <void property="puerto">
+   <int>1500</int>
+  </void>
+ </object>
+</java>

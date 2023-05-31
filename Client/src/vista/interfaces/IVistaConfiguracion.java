@@ -14,7 +14,6 @@ public interface IVistaConfiguracion {
 	void lanzarVentanaEmergente(String mensaje);
 	void setLblDireccionIP(String direccionIP);
 	public void setTxtPuerto(String puerto);
+	public void setTxtNickname(String miNickname);
 	public String getNickname();
-
-    void setTxtNickname(String nickname);
 }
