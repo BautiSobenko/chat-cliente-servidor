@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class Servidor implements Runnable, Recepcion, Emision {
 
-    private int primario;
+    private int soyServidorPrimario = 1; //Inicio como verdadero y cambio si me demuestran lo contrario
 	
 	private static Servidor servidor = null;
 
@@ -29,11 +29,12 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
     private Conexion conexion;
 
-    private Servidor(){
+    private Servidor(int puerto){
 
-        this.puertoServer = Integer.parseInt(ConfiguracionServer.getConfig().getParametros()[1]);
+        //this.puertoServer = Integer.parseInt(ConfiguracionServer.getConfig().getParametros()[1]);
 
-        this.vistaServidor = new VistaServidor();
+        this.puertoServer = puerto;
+    	this.vistaServidor = new VistaServidor();
         
         //Tengo que verificar que tipo de servidor es, si es secundario envio solicitud de recincronizacion
 
@@ -41,10 +42,10 @@ public class Servidor implements Runnable, Recepcion, Emision {
         hiloServer.start();
 
     }
-
-    public static Servidor getServer(){
+    
+    public static Servidor getServer(int puerto){
         if( servidor == null ){
-            servidor = new Servidor();
+            servidor = new Servidor(puerto);
         }
         return servidor;
     }
@@ -70,7 +71,22 @@ public class Servidor implements Runnable, Recepcion, Emision {
             String msg;
             Mensaje mensaje;
             int puertoDestino;
-
+            
+            //Verifico si esta el otro activo
+            if(this.puertoServer==9999)
+            	this.conexion.crearConexionEnvio("localhost", 8888);
+            else
+            	this.conexion.crearConexionEnvio("localhost", 9999);
+            ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
+            MensajeClienteServidor mensajeClienteServidor = new MensajeClienteServidor();
+            mensajeClienteServidor.setMensaje("InicioServidor");
+            out.writeObject(mensajeClienteServidor);
+            this.conexion.cerrarConexion();
+            
+            //Cuando inicio el servidor mando al otro servidor que me inicie
+            //Si el otro servidor esta activo, me contestara, sino me mantengo como servidor primario
+            
+            
             while (true) {
 
                 conexion.aceptarConexion();
@@ -88,11 +104,27 @@ public class Servidor implements Runnable, Recepcion, Emision {
                     MensajeSincronizacion mensajeSincronizacion = (MensajeSincronizacion) mensaje;
 
                     this.conexiones = mensajeSincronizacion.getConexiones();
-                    this.registros = mensajeSincronizacion.getRegistros();
-
+                    this.registros = mensajeSincronizacion.getRegistros();    
+            	}else {
+            	if(msg.equals("InicioServidor")) {      		
+            	//Se inicio el otro servidor y me esta avisando
+            	//Le contesto que yo soy primario	
+            		if(this.puertoServer==9999)
+                    	this.conexion.crearConexionEnvio("localhost", 8888);
+                    else
+                    	this.conexion.crearConexionEnvio("localhost", 9999);
+                    out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
+                    mensajeClienteServidor = new MensajeClienteServidor();
+                    mensajeClienteServidor.setMensaje("SosSegundoComoFrancia");
+                    out.writeObject(mensajeClienteServidor);
+                    this.conexion.cerrarConexion();
                 }else {
-
-                    MensajeClienteServidor mensajeClienteServidor = (MensajeClienteServidor) mensaje;
+                	if(msg.equals("SosSegundoComoFrancia")) {
+                		//El otro servidor me aviso que el es el primario
+                		this.soyServidorPrimario = 0;
+                	}else {
+                		
+                    mensajeClienteServidor = (MensajeClienteServidor) mensaje;
 
                     puertoDestino = mensajeClienteServidor.getPuertoDestino();
                     ipDestino = mensajeClienteServidor.getIpDestino();
@@ -138,7 +170,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
                         //Reenvio del mensaje
                         this.conexion.crearConexionEnvio(ipDestino, puertoDestino);
 
-                        ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
+                        out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
 
                         out.writeObject(mensajeClienteServidor);
 
@@ -150,7 +182,9 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
             }
 
-        } catch (IOException e) {
+        } 
+        }
+        }catch (IOException e) {
 
             try {
 
@@ -288,6 +322,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
         //Le mando eliminar conectado a servidor secundario
 
     }
-    
+   
     
 }
