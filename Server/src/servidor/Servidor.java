@@ -102,10 +102,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
                     ipOrigen = mensajeClienteServidor.getIpOrigen();
                     nicknameOrigen = mensajeClienteServidor.getNicknameOrigen();
 
-                    //Tengo que agregar un mensaje que represente resincronizacion donde reciba las dos listas, la de registro y conectados
-                    //Tengo que agregar un mensaje que represente la SOLICITUD de resincronizacion, para enviar las dos listas
-                    //Hay que crear una nueva clase para mandar el objeto de resincronizacion
-
                   if (msg.equals("ELIMINA REGISTRO")) {
                         this.eliminaRegistro(ipOrigen, puertoOrigen);
                         this.vistaServidor.muestraMensaje("BAJA CLIENTE: " + nicknameOrigen + " | " + ipOrigen + " | " + puertoOrigen + "\n\n");
