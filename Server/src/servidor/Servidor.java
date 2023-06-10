@@ -102,7 +102,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
                     ipOrigen = mensajeClienteServidor.getIpOrigen();
                     nicknameOrigen = mensajeClienteServidor.getNicknameOrigen();
 
-                    //Tengo que agregar un tipo de mensaje donde reciba las actualizaciones del primario
                     //Tengo que agregar un mensaje que represente resincronizacion donde reciba las dos listas, la de registro y conectados
                     //Tengo que agregar un mensaje que represente la SOLICITUD de resincronizacion, para enviar las dos listas
                     //Hay que crear una nueva clase para mandar el objeto de resincronizacion
@@ -115,15 +114,18 @@ public class Servidor implements Runnable, Recepcion, Emision {
                         if (msg.equalsIgnoreCase("LLAMADA ACEPTADA")) {
                             this.agregaConectado(ipOrigen, puertoOrigen, nicknameOrigen);
                             this.agregaConectado(ipDestino, puertoDestino, nicknameDestino);
+                            this.sincronizacionRedundancia();
                         } else if (msg.equalsIgnoreCase("DESCONECTAR")) {
                             this.eliminaConectado(ipOrigen, puertoOrigen);
                             this.eliminaConectado(ipDestino, puertoDestino);
+                            this.sincronizacionRedundancia();
                             mensajeClienteServidor.setConectados(this.getClientesFueraDeSesion());
                         } else if (msg.equalsIgnoreCase("REGISTRO")) {
 
                             if (this.registrarCliente(ipOrigen, puertoOrigen, nicknameOrigen)) {
                                 msg = "REGISTRO EXITOSO";
                                 mensajeClienteServidor.setConectados(this.getClientesFueraDeSesion());
+                                this.sincronizacionRedundancia();
                             } else
                                 msg = "REGISTRO FALLIDO";
 
@@ -137,17 +139,18 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
                         this.vistaServidor.muestraMensaje("ORIGEN: " + ipOrigen + " => DESTINO: " + ipDestino + " :\n" + msg + "\n\n");
 
-                        //Creo socket: Reenvio del mensaje
+                        //Reenvio del mensaje
                         this.conexion.crearConexionEnvio(ipDestino, puertoDestino);
 
                         ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
 
                         out.writeObject(mensajeClienteServidor);
+
+                        this.conexion.cerrarConexion();
                     }
 
                 }
 
-                this.conexion.cerrarConexion();
 
             }
 
@@ -173,6 +176,35 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
 
         }
+
+    }
+
+    /*
+    Sincronizo al modificar Registros
+    Sincronizo al modificar Conexiones
+     */
+    public void sincronizacionRedundancia() {
+
+        //Debemos levantar la IP y Puerto del server redundante de la configuracion
+
+        String ipServerRedundante = "";
+        int puertoServerReundante = 0;
+
+        try {
+            this.conexion.crearConexionEnvio(ipServerRedundante, puertoServerReundante);
+
+            ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
+
+            MensajeSincronizacion mensajeSincronizacion = new MensajeSincronizacion(this.registros, this.conexiones);
+
+            out.writeObject(mensajeSincronizacion);
+
+            this.conexion.cerrarConexion();
+
+        } catch (IOException e) {
+            this.vistaServidor.muestraMensaje("ERROR EN CONEXION - SINCRONIZACION CON REDUNDANCIA \n");
+        }
+
 
     }
 
