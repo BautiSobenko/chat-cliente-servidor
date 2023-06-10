@@ -8,6 +8,11 @@ public class MainServer {
 
         Servidor.getServer();
 
+
+
+        //Aca se podria instanciar los dos servers
+        //Le pasamos por parametro el puerto correspondiente a cada uno
+
     }
 
 }

@@ -3,6 +3,8 @@ package servidor;
 import conexion.Conexion;
 import configuracion.ConfiguracionServer;
 import mensaje.Mensaje;
+import mensaje.MensajeClienteServidor;
+import mensaje.MensajeSincronizacion;
 import mensaje.clienteConectado;
 import vista.vistas.VistaServidor;
 
@@ -14,13 +16,14 @@ import java.util.stream.Collectors;
 
 public class Servidor implements Runnable, Recepcion, Emision {
 
-    private static Servidor servidor = null;
+    private int primario;
+	
+	private static Servidor servidor = null;
 
     private final VistaServidor vistaServidor;
 
     private final int puertoServer;
 
-    
     private ArrayList<clienteConectado> registros = new ArrayList<clienteConectado>();
     private ArrayList<clienteConectado> conexiones = new ArrayList<clienteConectado>();
 
@@ -31,6 +34,8 @@ public class Servidor implements Runnable, Recepcion, Emision {
         this.puertoServer = Integer.parseInt(ConfiguracionServer.getConfig().getParametros()[1]);
 
         this.vistaServidor = new VistaServidor();
+        
+        //Tengo que verificar que tipo de servidor es, si es secundario envio solicitud de recincronizacion
 
         Thread hiloServer = new Thread(this);
         hiloServer.start();
@@ -71,54 +76,75 @@ public class Servidor implements Runnable, Recepcion, Emision {
                 conexion.aceptarConexion();
 
                 mensaje = this.recibeMensaje();
-
-                puertoDestino = mensaje.getPuertoDestino();
-                ipDestino = mensaje.getIpDestino();
-                nicknameDestino = mensaje.getNicknameDestino();
-
-                puertoOrigen = mensaje.getPuertoOrigen();
-                ipOrigen = mensaje.getIpOrigen();
-                nicknameOrigen = mensaje.getNicknameOrigen();
-
                 msg = mensaje.getMensaje();
 
-                if( msg.equals("ELIMINA REGISTRO") ) {
-                    this.eliminaRegistro(ipOrigen, puertoOrigen);
-                    this.vistaServidor.muestraMensaje("BAJA CLIENTE: "+ nicknameOrigen +" | "+ ipOrigen + " | " + puertoOrigen + "\n\n");
+                /*
+                Tendremos 2 tipos de Mensajes:
+                 1. Mensajes Cliente-Servidor
+                 2. Mensajes Servidor-Servidor -> De Sincronizacion
+                 */
+
+                if ( msg.equals("SINCRONIZACION") ) {
+                    MensajeSincronizacion mensajeSincronizacion = (MensajeSincronizacion) mensaje;
+
+                    this.conexiones = mensajeSincronizacion.getConexiones();
+                    this.registros = mensajeSincronizacion.getRegistros();
+
                 }else {
 
-                    if (msg.equalsIgnoreCase("LLAMADA ACEPTADA")) {
-                        this.agregaConectado(ipOrigen, puertoOrigen, nicknameOrigen);
-                        this.agregaConectado(ipDestino, puertoDestino, nicknameDestino);
-                    } else if (msg.equalsIgnoreCase("DESCONECTAR")) {
-                        this.eliminaConectado(ipOrigen, puertoOrigen);
-                        this.eliminaConectado(ipDestino, puertoDestino);
-                        mensaje.setConectados(this.getClientesFueraDeSesion());
-                    } else if (msg.equalsIgnoreCase("REGISTRO")) {
+                    MensajeClienteServidor mensajeClienteServidor = (MensajeClienteServidor) mensaje;
 
-                        if (this.registrarCliente(ipOrigen, puertoOrigen,nicknameOrigen)) {
-                        	msg = "REGISTRO EXITOSO";
-                        	mensaje.setConectados(this.getClientesFueraDeSesion());
+                    puertoDestino = mensajeClienteServidor.getPuertoDestino();
+                    ipDestino = mensajeClienteServidor.getIpDestino();
+                    nicknameDestino = mensajeClienteServidor.getNicknameDestino();
+
+                    puertoOrigen = mensajeClienteServidor.getPuertoOrigen();
+                    ipOrigen = mensajeClienteServidor.getIpOrigen();
+                    nicknameOrigen = mensajeClienteServidor.getNicknameOrigen();
+
+                    //Tengo que agregar un tipo de mensaje donde reciba las actualizaciones del primario
+                    //Tengo que agregar un mensaje que represente resincronizacion donde reciba las dos listas, la de registro y conectados
+                    //Tengo que agregar un mensaje que represente la SOLICITUD de resincronizacion, para enviar las dos listas
+                    //Hay que crear una nueva clase para mandar el objeto de resincronizacion
+
+                  if (msg.equals("ELIMINA REGISTRO")) {
+                        this.eliminaRegistro(ipOrigen, puertoOrigen);
+                        this.vistaServidor.muestraMensaje("BAJA CLIENTE: " + nicknameOrigen + " | " + ipOrigen + " | " + puertoOrigen + "\n\n");
+                    } else {
+
+                        if (msg.equalsIgnoreCase("LLAMADA ACEPTADA")) {
+                            this.agregaConectado(ipOrigen, puertoOrigen, nicknameOrigen);
+                            this.agregaConectado(ipDestino, puertoDestino, nicknameDestino);
+                        } else if (msg.equalsIgnoreCase("DESCONECTAR")) {
+                            this.eliminaConectado(ipOrigen, puertoOrigen);
+                            this.eliminaConectado(ipDestino, puertoDestino);
+                            mensajeClienteServidor.setConectados(this.getClientesFueraDeSesion());
+                        } else if (msg.equalsIgnoreCase("REGISTRO")) {
+
+                            if (this.registrarCliente(ipOrigen, puertoOrigen, nicknameOrigen)) {
+                                msg = "REGISTRO EXITOSO";
+                                mensajeClienteServidor.setConectados(this.getClientesFueraDeSesion());
+                            } else
+                                msg = "REGISTRO FALLIDO";
+
+                            mensajeClienteServidor.setMensaje(msg);
+                        } else if (msg.equalsIgnoreCase("RECARGAR CONECTADOS")) {
+                            mensajeClienteServidor.setConectados(this.getClientesFueraDeSesion());
+                        } else if ((msg.equalsIgnoreCase("LLAMADA") && verificaConexion(ipDestino, puertoDestino))) {
+                            msg = "OCUPADO";
+                            mensajeClienteServidor.setMensaje(msg);
                         }
-                        else
-                            msg = "REGISTRO FALLIDO";
 
-                        mensaje.setMensaje(msg);
-                    } else if ( msg.equalsIgnoreCase("RECARGAR CONECTADOS") ) {
-                        mensaje.setConectados(this.getClientesFueraDeSesion());
-                    }else if( (msg.equalsIgnoreCase("LLAMADA") && verificaConexion(ipDestino, puertoDestino)) ){
-                        msg = "OCUPADO";
-                        mensaje.setMensaje(msg);
+                        this.vistaServidor.muestraMensaje("ORIGEN: " + ipOrigen + " => DESTINO: " + ipDestino + " :\n" + msg + "\n\n");
+
+                        //Creo socket: Reenvio del mensaje
+                        this.conexion.crearConexionEnvio(ipDestino, puertoDestino);
+
+                        ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
+
+                        out.writeObject(mensajeClienteServidor);
                     }
 
-                    this.vistaServidor.muestraMensaje("ORIGEN: " + ipOrigen + " => DESTINO: " + ipDestino + " :\n" + msg + "\n\n");
-
-                    //Creo socket: Reenvio del mensaje
-                    this.conexion.crearConexionEnvio(ipDestino, puertoDestino);
-
-                    ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
-
-                    out.writeObject(mensaje);
                 }
 
                 this.conexion.cerrarConexion();
@@ -129,13 +155,13 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
             try {
 
-                Mensaje mensaje = new Mensaje();
-                mensaje.setMensaje("ERROR LLAMADA");
+                MensajeClienteServidor mensajeClienteServidor = new MensajeClienteServidor();
+                mensajeClienteServidor.setMensaje("ERROR LLAMADA");
 
                 this.conexion.crearConexionEnvio(ipOrigen, puertoOrigen);
 
                 ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
-                out.writeObject(mensaje);
+                out.writeObject(mensajeClienteServidor);
 
                 this.vistaServidor.muestraMensaje("ERROR EN CONEXION: "+ nicknameOrigen +" | "+ ipOrigen + " | " + puertoOrigen + "\n\n");
 
@@ -194,6 +220,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
         }else{
         	clienteConectado cliente = new clienteConectado(ipOrigen,puertoOrigen,nicknameOrigen);
             this.registros.add(cliente);
+            //Le paso el cliente registrado al servidor
             this.vistaServidor.muestraMensaje("REGISTRO: "+ nicknameOrigen +" | "+ ipOrigen + " | " + puertoOrigen + "\n\n");
 
             return true;
@@ -203,10 +230,10 @@ public class Servidor implements Runnable, Recepcion, Emision {
     }
 
     @Override
-    public Mensaje recibeMensaje() {
+    public MensajeClienteServidor recibeMensaje() {
         ObjectInputStream in = conexion.getInputStreamConexion();
         try {
-            return  (Mensaje) in.readObject();
+            return  (MensajeClienteServidor) in.readObject();
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -216,18 +243,21 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
         clienteConectado cliente = new clienteConectado(ip,puerto,nickname);
         this.conexiones.add(cliente);
+        //Le mando agregar conectado a servidor secundario
 
     }
     
     public void eliminaRegistro(String ip, int puerto) {
 
         this.registros.removeIf( c -> c.getIp().equals(ip) && c.getPuerto() == puerto );
+        //Le mando eliminar registrado a servidor secundario
 
     }
     
     public void eliminaConectado(String ip, int puerto) {
 
         this.conexiones.removeIf( c -> c.getIp().equals(ip) && c.getPuerto() == puerto );
+        //Le mando eliminar conectado a servidor secundario
 
     }
     
