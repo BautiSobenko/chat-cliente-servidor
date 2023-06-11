@@ -3,13 +3,10 @@ package monitor;
 import conexion.Conexion;
 import mensaje.Mensaje;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Timer;
 import java.util.TimerTask;
-import main.MainServerUno;
-import main.MainServerDos;
 
 public class Monitor implements Runnable{
 
@@ -71,14 +68,9 @@ public class Monitor implements Runnable{
         public boolean heartbeatServidorUno=false;
         public boolean heartbeatServidorDos=false;
         public boolean primera = true;
-        private String executablePathServerUno = "java ";
-        private String executablePathServerDos = "C:\\Users\\agusa\\Documents\\GitHub\\chat-cliente-servidor-CI\\Server\\Server_jar\\ServidorDos.jar";
-        private Process procesoServerALevantar;
-        private Runtime runTime;
         @Override
         public void run() {
         	if(!primera) {
-        		runTime = Runtime.getRuntime();
 	            if (heartbeatServidorUno) {
 	                System.out.println("Servidor Uno Activo");
 	                // Realizar la acción correspondiente cuando se recibe el heartbeat correctamente
@@ -89,8 +81,9 @@ public class Monitor implements Runnable{
 	                System.out.println("Servidor Uno perdido");
 	                // Realizar la acción correspondiente cuando se pierde el heartbeat
 	                try {
-						procesoServerALevantar = runTime.exec(executablePathServerUno);
-					} catch (IOException e) {
+                        Runtime.getRuntime().exec("java -jar ServerUno_jar/Server.jar");
+					} catch (Exception e) {
+                        e.printStackTrace();
 						System.out.println("No se encontro el ejecutable del servidor 1");
 					}
 	            }
@@ -105,8 +98,9 @@ public class Monitor implements Runnable{
 	                System.out.println("Servidor Dos perdido");
 	                // Realizar la acción correspondiente cuando se pierde el heartbeat
 	                try {
-	                	ProcessBuilder processBuilder = new ProcessBuilder("ls", "-l", "executablePathServerDos");
-					} catch (IOException e) {
+                        Runtime.getRuntime().exec("java -jar ServerDos_jar/Server.jar");
+					} catch (Exception e) {
+                        e.printStackTrace();
 						System.out.println("No se encontro el ejecutable del servidor 2");
 					}
 	            }

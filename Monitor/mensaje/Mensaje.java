@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.security.PublicKey;
 import java.util.ArrayList;
 
-import mensaje.clienteConectado;
-
 public class Mensaje implements Serializable {
 	
 	String ipOrigen;
