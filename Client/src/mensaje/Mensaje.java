@@ -15,6 +15,7 @@ public class Mensaje implements Serializable {
     String nicknameDestino;
     PublicKey publicKey;
     private ArrayList<clienteConectado> conectados;
+    private ArrayList<clienteConectado> registrados;
 
     public Mensaje() {
     }
@@ -90,6 +91,14 @@ public class Mensaje implements Serializable {
 
 	public ArrayList<clienteConectado> getConectados() {
 		return conectados;
+	}
+	
+	public ArrayList<clienteConectado> getRegistrados() {
+		return registrados;
+	}
+
+	public void setRegistrados(ArrayList<clienteConectado> registrados) {
+		this.registrados = registrados;
 	}
 
 	@Override

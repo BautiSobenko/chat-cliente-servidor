@@ -1,9 +1,9 @@
 package servidor;
 
-import mensaje.MensajeClienteServidor;
+import mensaje.Mensaje;
 
 public interface Recepcion {
 
-    public MensajeClienteServidor recibeMensaje();
+    public Mensaje recibeMensaje();
 
 }

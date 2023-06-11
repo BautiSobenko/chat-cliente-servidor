@@ -49,54 +49,73 @@ public class Cliente implements Runnable, Emision, Recepcion {
 
     @Override
     public void enviaMensaje(String msg) {
-        try {
-            this.conexion.crearConexionEnvio(this.ipServer, this.puertoServidor);
-
-            Mensaje mensaje = new Mensaje();
-
-            //Obtengo la ip origen (Informacion extra)
-            InetAddress adress = InetAddress.getLocalHost();
-            this.ipOrigen = adress.getHostAddress();
-
-            mensaje.setIpOrigen(this.ipOrigen);
-            mensaje.setPuertoOrigen(this.puertoOrigen);
-            mensaje.setNicknameOrigen(this.nicknameOrigen);
-
-            if( msg.equals("REGISTRO")  || msg.equals("ELIMINA REGISTRO") || msg.equals("RECARGAR CONECTADOS") ) {
-                mensaje.setIpDestino(this.ipOrigen);
-                mensaje.setPuertoDestino(this.puertoOrigen);
-            }else {
-                //Si es "localhost", trabajo con la IP real, no con la String "localhost"
-                if( this.ipDestino.equals("localhost") )
-                    mensaje.setIpDestino(adress.getHostAddress());
-                else
-                    mensaje.setIpDestino(this.ipDestino);
-
-                mensaje.setPuertoDestino(this.puertoDestino);
-            }
-
-            //Los mensajes de "Control" no debo cifrarlos
-            if( msg.equals("LLAMADA") || msg.equals("DESCONECTAR") || msg.equals("REGISTRO") || msg.equals("ELIMINA REGISTRO") || msg.equals("RECARGAR CONECTADOS") ) {
-
-                if (msg.equals("LLAMADA")){
-                    mensaje.setPublicKey(this.rsa.getPublicKey()); //Cuando yo llamo, ya envio mi clave publica (puede aceptarme)
-                }
-
-                mensaje.setMensaje(msg);
-            }else
-                mensaje.setMensaje( this.rsa.encriptar(msg, this.publicKeyExtremo) ); //Encripto con la llave publica que me envio
-
-
-            ObjectOutputStream out = this.conexion.getOutputStreamConexion();//new ObjectOutputStream(sCliente.getOutputStream());
-            out.writeObject(mensaje);
-            out.close();
-
-            conexion.cerrarConexion();
-
-        } catch (Exception e) {
-            ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor");
-        }
-
+    	boolean envio = true;
+        
+    	try {
+    		this.conexion.crearConexionEnvio(this.ipServer, this.puertoServidor);
+    	}
+    	catch(Exception e) {
+    		try {
+    			if(this.puertoServidor==9090)
+    			this.conexion.crearConexionEnvio(this.ipServer,8888);
+    		else
+    			this.conexion.crearConexionEnvio(this.ipServer, 9090);
+    		}
+    		catch(Exception ex) {
+    			ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor");
+    			envio = false;
+    		}
+    	}
+    	
+    	if(envio) {
+	    	try {
+	            
+	
+	            Mensaje mensaje = new Mensaje();
+	
+	            //Obtengo la ip origen (Informacion extra)
+	            InetAddress adress = InetAddress.getLocalHost();
+	            this.ipOrigen = adress.getHostAddress();
+	
+	            mensaje.setIpOrigen(this.ipOrigen);
+	            mensaje.setPuertoOrigen(this.puertoOrigen);
+	            mensaje.setNicknameOrigen(this.nicknameOrigen);
+	
+	            if( msg.equals("REGISTRO")  || msg.equals("ELIMINA REGISTRO") || msg.equals("RECARGAR CONECTADOS") ) {
+	                mensaje.setIpDestino(this.ipOrigen);
+	                mensaje.setPuertoDestino(this.puertoOrigen);
+	            }else {
+	                //Si es "localhost", trabajo con la IP real, no con la String "localhost"
+	                if( this.ipDestino.equals("localhost") )
+	                    mensaje.setIpDestino(adress.getHostAddress());
+	                else
+	                    mensaje.setIpDestino(this.ipDestino);
+	
+	                mensaje.setPuertoDestino(this.puertoDestino);
+	            }
+	
+	            //Los mensajes de "Control" no debo cifrarlos
+	            if( msg.equals("LLAMADA") || msg.equals("DESCONECTAR") || msg.equals("REGISTRO") || msg.equals("ELIMINA REGISTRO") || msg.equals("RECARGAR CONECTADOS") ) {
+	
+	                if (msg.equals("LLAMADA")){
+	                    mensaje.setPublicKey(this.rsa.getPublicKey()); //Cuando yo llamo, ya envio mi clave publica (puede aceptarme)
+	                }
+	
+	                mensaje.setMensaje(msg);
+	            }else
+	                mensaje.setMensaje( this.rsa.encriptar(msg, this.publicKeyExtremo) ); //Encripto con la llave publica que me envio
+	
+	
+	            ObjectOutputStream out = this.conexion.getOutputStreamConexion();//new ObjectOutputStream(sCliente.getOutputStream());
+	            out.writeObject(mensaje);
+	            out.close();
+	
+	            conexion.cerrarConexion();
+	
+	        } catch (Exception e) {
+	            //ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor");
+	        }
+    	}
     }
 
 
