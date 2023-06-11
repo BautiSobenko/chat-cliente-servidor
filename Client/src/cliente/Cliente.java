@@ -56,10 +56,14 @@ public class Cliente implements Runnable, Emision, Recepcion {
     	}
     	catch(Exception e) {
     		try {
-    			if(this.puertoServidor==9090)
-    			this.conexion.crearConexionEnvio(this.ipServer,8888);
-    		else
+    			if(this.puertoServidor==9090) {
+	    			this.conexion.crearConexionEnvio(this.ipServer,8888);
+	    			this.puertoServidor = 8888;
+    			}
+    		else {
     			this.conexion.crearConexionEnvio(this.ipServer, 9090);
+    			this.puertoServidor = 9090;
+    		}
     		}
     		catch(Exception ex) {
     			ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor");
@@ -113,53 +117,72 @@ public class Cliente implements Runnable, Emision, Recepcion {
 	            conexion.cerrarConexion();
 	
 	        } catch (Exception e) {
-	            //ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor");
+	            ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor");
 	        }
     	}
     }
 
 
     public void enviaMensaje(String msg, String ipDestino, int puertoDestino, String nicknameDestino) {
-        try {
-            this.conexion.crearConexionEnvio(ipServer, this.puertoServidor);
+    	boolean envio = true;
+    	
+    	try {
+    		this.conexion.crearConexionEnvio(this.ipServer, this.puertoServidor);
+    	}
+    	catch(Exception e) {
+    		try {
+    			if(this.puertoServidor==9090) {
+	    			this.conexion.crearConexionEnvio(this.ipServer,8888);
+	    			this.puertoServidor = 8888;
+    			}
+    		else {
+    			this.conexion.crearConexionEnvio(this.ipServer, 9090);
+    			this.puertoServidor = 9090;
+    		}
+    		}
+    		catch(Exception ex) {
+    			ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor");
+    			envio = false;
+    		}
+    	}
 
-            Mensaje mensaje = new Mensaje();
-
-            InetAddress adress = InetAddress.getLocalHost(); //Obtengo la ip origen (Informacion extra)
-            this.ipOrigen = adress.getHostAddress();
-
-
-            if (msg.equalsIgnoreCase("LLAMADA ACEPTADA")) {
-
-                this.puertoDestino = puertoDestino;
-                this.ipDestino = ipDestino;
-                this.nicknameDestino = nicknameDestino;
-
-                mensaje.setPuertoDestino(puertoDestino);
-                mensaje.setIpDestino(ipDestino);
-                mensaje.setNicknameDestino(nicknameDestino);
-
-                mensaje.setIpOrigen(this.ipOrigen);
-                mensaje.setPuertoOrigen(this.puertoOrigen);
-                mensaje.setNicknameOrigen(this.nicknameOrigen);
-
-                mensaje.setPublicKey(this.rsa.getPublicKey()); //Acepte la llamada, le envio mi clave publica al extremo para comenzar a intercambiar mensajes
-
-                mensaje.setMensaje(msg);
-
-            }
-
-            ObjectOutputStream out = this.conexion.getOutputStreamConexion(); //new ObjectOutputStream(sCliente.getOutputStream());
-            out.writeObject(mensaje);
-            out.close();
-
-            conexion.cerrarConexion();
-
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            e.printStackTrace();
+    	if(envio) {
+    		try {
+	            Mensaje mensaje = new Mensaje();
+	
+	            InetAddress adress = InetAddress.getLocalHost(); //Obtengo la ip origen (Informacion extra)
+	            this.ipOrigen = adress.getHostAddress();
+	
+	
+	            if (msg.equalsIgnoreCase("LLAMADA ACEPTADA")) {
+	
+	                this.puertoDestino = puertoDestino;
+	                this.ipDestino = ipDestino;
+	                this.nicknameDestino = nicknameDestino;
+	
+	                mensaje.setPuertoDestino(puertoDestino);
+	                mensaje.setIpDestino(ipDestino);
+	                mensaje.setNicknameDestino(nicknameDestino);
+	
+	                mensaje.setIpOrigen(this.ipOrigen);
+	                mensaje.setPuertoOrigen(this.puertoOrigen);
+	                mensaje.setNicknameOrigen(this.nicknameOrigen);
+	
+	                mensaje.setPublicKey(this.rsa.getPublicKey()); //Acepte la llamada, le envio mi clave publica al extremo para comenzar a intercambiar mensajes
+	
+	                mensaje.setMensaje(msg);
+	
+	            }
+	
+	            ObjectOutputStream out = this.conexion.getOutputStreamConexion(); //new ObjectOutputStream(sCliente.getOutputStream());
+	            out.writeObject(mensaje);
+	            out.close();
+	
+	            conexion.cerrarConexion();
+        } catch (Exception e) {
+           
         }
+    	}
     }
 
     @Override
