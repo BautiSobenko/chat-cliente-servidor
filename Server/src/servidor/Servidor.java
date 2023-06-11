@@ -110,9 +110,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
                     this.conexiones = mensaje.getConectados();
                     this.registros = mensaje.getRegistrados();   
             	}else {
-            	if((msg.equals("PRUEBA HEARTBEAT")))
-            		System.out.println("prueba exitosa");
-            	else {
             	if(msg.equals("InicioServidor")) {      		
             	//Se inicio el otro servidor y me esta avisando
             	//Le contesto que yo soy primario	
@@ -189,9 +186,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
                 }
 
 
-            }
-
-        } 
+            } 
         }
         }
         }catch (IOException e) {
