@@ -17,13 +17,7 @@ public class Conexion implements IConexion {
     public void establecerConexion(Object... args) {
         try {
             int puertoOrigen = (int) args[0];
-
-            if( this.serverSocket != null ) {
-                this.serverSocket.close();
-            }
-
             this.serverSocket = new ServerSocket(puertoOrigen);
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

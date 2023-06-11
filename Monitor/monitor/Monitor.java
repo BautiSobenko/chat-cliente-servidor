@@ -3,16 +3,19 @@ package monitor;
 import conexion.Conexion;
 import mensaje.Mensaje;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Timer;
 import java.util.TimerTask;
+import main.MainServerUno;
+import main.MainServerDos;
 
 public class Monitor implements Runnable{
 
-	private static final int INTERVALO_HEARTBEAT = 5000;
-	public static final int puerto = 1111;
-    public Conexion conexionServer;
+	private static final int INTERVALO_HEARTBEAT = 4000;
+	public static final int puerto = 5555;
+    public Conexion conexionMonitor;
 
     public Monitor(){
     }
@@ -22,9 +25,9 @@ public class Monitor implements Runnable{
 
         try {
 
-            this.conexionServer = new Conexion();
+            this.conexionMonitor = new Conexion();
             //ServerSocket
-            conexionServer.establecerConexion(puerto);
+            conexionMonitor.establecerConexion(puerto);
             
             Mensaje mensaje;
             String msg;
@@ -36,25 +39,27 @@ public class Monitor implements Runnable{
             
             while (true){
 
-                this.conexionServer.aceptarConexion();
+                this.conexionMonitor.aceptarConexion();
+                
                 mensaje = this.recibeMensaje();
                 msg = mensaje.getMensaje();
                 puertoRecibido = Integer.parseInt(msg);
 
                 if (puertoRecibido == 9090)
                 	task.reciboHeartBeatUno();
-                else
+                else 
                 	task.reciboHeartBeatDos();
+  
             }
 
         } catch (Exception e) {
-            System.out.println("entro exc");
+            e.printStackTrace();
         }
 
     }
 
     public Mensaje recibeMensaje() {
-        ObjectInputStream in = this.conexionServer.getInputStreamConexion();
+        ObjectInputStream in = this.conexionMonitor.getInputStreamConexion();
         try {
             return (Mensaje) in.readObject();
         } catch (IOException | ClassNotFoundException e) {
@@ -63,32 +68,51 @@ public class Monitor implements Runnable{
     }
     
     static class HeartbeatCheckTask extends TimerTask {
-        public boolean heartbeatServidorUno = false;
-        public boolean heartbeatServidorDos = false;
-        
+        public boolean heartbeatServidorUno=false;
+        public boolean heartbeatServidorDos=false;
+        public boolean primera = true;
+        private String executablePathServerUno = "java ";
+        private String executablePathServerDos = "C:\\Users\\agusa\\Documents\\GitHub\\chat-cliente-servidor-CI\\Server\\Server_jar\\ServidorDos.jar";
+        private Process procesoServerALevantar;
+        private Runtime runTime;
         @Override
         public void run() {
-            if (heartbeatServidorUno) {
-                System.out.println("Servidor Uno Activo");
-                // Realizar la acción correspondiente cuando se recibe el heartbeat correctamente
-                
-                // Reiniciar la variable para el siguiente chequeo
-                heartbeatServidorUno = false;
-            } else {
-                System.out.println("Servidor Uno perdido");
-                // Realizar la acción correspondiente cuando se pierde el heartbeat
-            }
-            
-            if (heartbeatServidorDos) {
-                System.out.println("Servidor Dos Activo");
-                // Realizar la acción correspondiente cuando se recibe el heartbeat correctamente
-                
-                // Reiniciar la variable para el siguiente chequeo
-                heartbeatServidorDos = false;
-            } else {
-                System.out.println("Servidor Dos perdido");
-                // Realizar la acción correspondiente cuando se pierde el heartbeat
-            }
+        	if(!primera) {
+        		runTime = Runtime.getRuntime();
+	            if (heartbeatServidorUno) {
+	                System.out.println("Servidor Uno Activo");
+	                // Realizar la acción correspondiente cuando se recibe el heartbeat correctamente
+	                
+	                // Reiniciar la variable para el siguiente chequeo
+	                heartbeatServidorUno = false;
+	            } else {
+	                System.out.println("Servidor Uno perdido");
+	                // Realizar la acción correspondiente cuando se pierde el heartbeat
+	                try {
+						procesoServerALevantar = runTime.exec(executablePathServerUno);
+					} catch (IOException e) {
+						System.out.println("No se encontro el ejecutable del servidor 1");
+					}
+	            }
+	            
+	            if (heartbeatServidorDos) {
+	                System.out.println("Servidor Dos Activo");
+	                // Realizar la acción correspondiente cuando se recibe el heartbeat correctamente
+	                
+	                // Reiniciar la variable para el siguiente chequeo
+	                heartbeatServidorDos = false;
+	            } else {
+	                System.out.println("Servidor Dos perdido");
+	                // Realizar la acción correspondiente cuando se pierde el heartbeat
+	                try {
+	                	ProcessBuilder processBuilder = new ProcessBuilder("ls", "-l", "executablePathServerDos");
+					} catch (IOException e) {
+						System.out.println("No se encontro el ejecutable del servidor 2");
+					}
+	            }
+        	}
+        	else
+        		primera=false;
         }
         
         public void reciboHeartBeatUno() {

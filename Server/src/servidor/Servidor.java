@@ -45,7 +45,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
         Thread hiloServer = new Thread(this);
         hiloServer.start();
 
-        Heartbeat hb = new Heartbeat(this.conexion,this.puertoServer);
+        Heartbeat hb = new Heartbeat(this,this.puertoServer);
         Thread hiloHeartbeat = new Thread(hb);
         hiloHeartbeat.start();
         
@@ -337,6 +337,8 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
     }
    
-    
+    public Conexion getConexion() {
+    	return this.conexion;
+    }
     
 }
