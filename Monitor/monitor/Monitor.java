@@ -5,6 +5,7 @@ import mensaje.Mensaje;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -31,7 +32,7 @@ public class Monitor implements Runnable{
             int puertoRecibido;
             
     		Timer timer = new Timer();
-    		HeartbeatCheckTask task = new HeartbeatCheckTask();
+    		HeartbeatCheckTask task = new HeartbeatCheckTask(this);
             timer.schedule(task, 0, INTERVALO_HEARTBEAT);
             
             while (true){
@@ -55,6 +56,10 @@ public class Monitor implements Runnable{
 
     }
 
+    public Conexion getConexion() {
+        return this.conexionMonitor;
+    }
+
     public Mensaje recibeMensaje() {
         ObjectInputStream in = this.conexionMonitor.getInputStreamConexion();
         try {
@@ -68,8 +73,16 @@ public class Monitor implements Runnable{
         public boolean heartbeatServidorUno=false;
         public boolean heartbeatServidorDos=false;
         public boolean primera = true;
+        public Monitor monitor;
+
+        public HeartbeatCheckTask(Monitor monitor) {
+            this.monitor = monitor;
+        }
+
         @Override
         public void run() {
+            ObjectOutputStream out;
+            Conexion conexion = monitor.getConexion();
         	if(!primera) {
 	            if (heartbeatServidorUno) {
 	                System.out.println("Servidor Uno Activo");
@@ -80,6 +93,18 @@ public class Monitor implements Runnable{
 	            } else {
 	                System.out.println("Servidor Uno perdido");
 	                // Realizar la acción correspondiente cuando se pierde el heartbeat
+                    try {
+                        conexion.crearConexionEnvio("localhost", 8888);
+                        out = new ObjectOutputStream(conexion.getSocket().getOutputStream());
+                        Mensaje mensajeClienteServidor = new Mensaje();
+                        mensajeClienteServidor.setMensaje("SOS DE BOCA");
+                        out.writeObject(mensajeClienteServidor);
+                        out.close();
+                        conexion.cerrarConexion();
+                    }
+                    catch(Exception ex) {
+                        //e.printStackTrace();
+                    }
 	                try {
                         Runtime.getRuntime().exec("java -jar ServerUno_jar/Server.jar");
 					} catch (Exception e) {
@@ -87,6 +112,7 @@ public class Monitor implements Runnable{
 						System.out.println("No se encontro el ejecutable del servidor 1");
 					}
 	            }
+
 	            
 	            if (heartbeatServidorDos) {
 	                System.out.println("Servidor Dos Activo");
@@ -97,6 +123,19 @@ public class Monitor implements Runnable{
 	            } else {
 	                System.out.println("Servidor Dos perdido");
 	                // Realizar la acción correspondiente cuando se pierde el heartbeat
+                    try {
+
+                        conexion.crearConexionEnvio("localhost", 9090);
+                        out = new ObjectOutputStream(conexion.getSocket().getOutputStream());
+                        Mensaje mensajeClienteServidor = new Mensaje();
+                        mensajeClienteServidor.setMensaje("SOS DE BOCA");
+                        out.writeObject(mensajeClienteServidor);
+                        out.close();
+                        conexion.cerrarConexion();
+                    }
+                    catch(Exception ex) {
+                        //e.printStackTrace();
+                    }
 	                try {
                         Runtime.getRuntime().exec("java -jar ServerDos_jar/Server.jar");
 					} catch (Exception e) {

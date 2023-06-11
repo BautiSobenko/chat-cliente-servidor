@@ -109,10 +109,10 @@ public class Servidor implements Runnable, Recepcion, Emision {
    
                     this.conexiones = mensaje.getConectados();
                     this.registros = mensaje.getRegistrados();   
-            	}else {
-            	if(msg.equals("InicioServidor")) {      		
-            	//Se inicio el otro servidor y me esta avisando
-            	//Le contesto que yo soy primario	
+            	}
+                else if(msg.equals("InicioServidor")) {
+                    //Se inicio el otro servidor y me esta avisando
+                    //Le contesto que yo soy primario
             		this.conexion.crearConexionEnvio("localhost", this.puertoOtroServidor);
                     out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
                     mensaje = new Mensaje();
@@ -121,16 +121,18 @@ public class Servidor implements Runnable, Recepcion, Emision {
                     mensaje.setRegistrados(this.registros);
                     out.writeObject(mensaje);
                     this.conexion.cerrarConexion();
-                }else {
-                	if(msg.equals("SosSegundoComoFrancia")) {
+                }
+                else if(msg.equals("SOS DE BOCA")) {
+                    this.vistaServidor.muestraMensaje("ACTUALIZACION SOY PRIMARIO \n");
+                }
+                else {
+                    if(msg.equals("SosSegundoComoFrancia")) {
                 		//El otro servidor me aviso que el es el primario
                 		this.soyServidorPrimario = 0;
                 		this.vistaServidor.muestraMensaje("SOY SERVIDOR SECUNDARIO \n");
                 		this.conexiones = mensaje.getConectados();
                 		this.registros = mensaje.getRegistrados();
                 	}else {
-                		
-                    mensaje = (Mensaje) mensaje;
 
                     puertoDestino = mensaje.getPuertoDestino();
                     ipDestino = mensaje.getIpDestino();
@@ -143,7 +145,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
                   if (msg.equals("ELIMINA REGISTRO")) {
                         this.eliminaRegistro(ipOrigen, puertoOrigen);
                         this.vistaServidor.muestraMensaje("BAJA CLIENTE: " + nicknameOrigen + " | " + ipOrigen + " | " + puertoOrigen + "\n\n");
-                    } else {
+                  }else {
 
                         if (msg.equalsIgnoreCase("LLAMADA ACEPTADA")) {
                             this.agregaConectado(ipOrigen, puertoOrigen, nicknameOrigen);
@@ -186,8 +188,8 @@ public class Servidor implements Runnable, Recepcion, Emision {
                 }
 
 
-            } 
-        }
+            }
+
         }
         }catch (IOException e) {
 
