@@ -32,7 +32,7 @@ public class Heartbeat implements Runnable{
 	
 	static class HeartbeatTask extends TimerTask {
         ObjectOutputStream out;
-        private int puertoMonitor = 3333; ///Actualizar el puerto del monitor con el que elijamos
+        private int puertoMonitor = 1111; ///Actualizar el puerto del monitor con el que elijamos
         public Conexion conexion;
         public int puerto;
         
