@@ -18,10 +18,8 @@ public class Heartbeat implements Runnable{
 		this.puerto = puerto;
 	}
 
-
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
 		Timer timer = new Timer();
 		HeartbeatTask task = new HeartbeatTask();
 		task.server = this.server;

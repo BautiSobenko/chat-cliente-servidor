@@ -56,14 +56,14 @@ public class Cliente implements Runnable, Emision, Recepcion {
     	}
     	catch(Exception e) {
     		try {
-    			if(this.puertoServidor==9090) {
+    			if(this.puertoServidor == 9090) {
 	    			this.conexion.crearConexionEnvio(this.ipServer,8888);
 	    			this.puertoServidor = 8888;
     			}
-    		else {
-    			this.conexion.crearConexionEnvio(this.ipServer, 9090);
-    			this.puertoServidor = 9090;
-    		}
+                else {
+                    this.conexion.crearConexionEnvio(this.ipServer, 9090);
+                    this.puertoServidor = 9090;
+                }
     		}
     		catch(Exception ex) {
     			ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor");
@@ -73,8 +73,7 @@ public class Cliente implements Runnable, Emision, Recepcion {
     	
     	if(envio) {
 	    	try {
-	            
-	
+
 	            Mensaje mensaje = new Mensaje();
 	
 	            //Obtengo la ip origen (Informacion extra)
@@ -206,8 +205,6 @@ public class Cliente implements Runnable, Emision, Recepcion {
                 nickname = mensajeRecibido.getNicknameOrigen();
 
                 txt = mensajeRecibido.getMensaje();
-
-                System.out.println("Mensaje recibido: " + txt);
 
                 if (txt.equalsIgnoreCase("LLAMADA")) {
                     ControladorRecepcionLlamada controladorRecepcionLlamada = ControladorRecepcionLlamada.get(false);

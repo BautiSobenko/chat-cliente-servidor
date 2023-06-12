@@ -58,7 +58,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
         return servidor;
     }
 
-
     @Override
     public void run() {
 
@@ -90,8 +89,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
                 out.writeObject(mensajeClienteServidor);
                 this.conexion.cerrarConexion();
             }
-            catch(Exception e) {
-            	this.vistaServidor.muestraMensaje("SOY SERVIDOR PRIMARIO \n");
+            catch(Exception ignored) {
             }
             
             //Cuando inicio el servidor mando al otro servidor que me inicie
@@ -122,14 +120,10 @@ public class Servidor implements Runnable, Recepcion, Emision {
                     out.writeObject(mensaje);
                     this.conexion.cerrarConexion();
                 }
-                else if(msg.equals("SOS DE BOCA")) {
-                    this.vistaServidor.muestraMensaje("ACTUALIZACION SOY PRIMARIO \n");
-                }
                 else {
                     if(msg.equals("SosSegundoComoFrancia")) {
                 		//El otro servidor me aviso que el es el primario
                 		this.soyServidorPrimario = 0;
-                		this.vistaServidor.muestraMensaje("SOY SERVIDOR SECUNDARIO \n");
                 		this.conexiones = mensaje.getConectados();
                 		this.registros = mensaje.getRegistrados();
                 	}else {
@@ -298,7 +292,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
         }else{
         	clienteConectado cliente = new clienteConectado(ipOrigen,puertoOrigen,nicknameOrigen);
             this.registros.add(cliente);
-            //Le paso el cliente registrado al servidor
             this.vistaServidor.muestraMensaje("REGISTRO: "+ nicknameOrigen +" | "+ ipOrigen + " | " + puertoOrigen + "\n\n");
 
             return true;
@@ -321,21 +314,18 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
         clienteConectado cliente = new clienteConectado(ip,puerto,nickname);
         this.conexiones.add(cliente);
-        //Le mando agregar conectado a servidor secundario
 
     }
     
     public void eliminaRegistro(String ip, int puerto) {
 
         this.registros.removeIf( c -> c.getIp().equals(ip) && c.getPuerto() == puerto );
-        //Le mando eliminar registrado a servidor secundario
 
     }
     
     public void eliminaConectado(String ip, int puerto) {
 
         this.conexiones.removeIf( c -> c.getIp().equals(ip) && c.getPuerto() == puerto );
-        //Le mando eliminar conectado a servidor secundario
 
     }
    
