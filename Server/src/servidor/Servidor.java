@@ -229,7 +229,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
             out.writeObject(mensajeSincronizacion);
 
-            out.close();
 
             this.conexion.cerrarConexion();
 
