@@ -62,8 +62,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
                 Mensaje mensajeClienteServidor = new Mensaje();
                 mensajeClienteServidor.setMensaje("estas?");
                 out.writeObject(mensajeClienteServidor);
-                out.reset();
-                out.close();
                 this.conexion.cerrarConexion();
                 
                 // Si se envia el mensaje, es porque hay un Primario, entonces soy Secundario
@@ -99,8 +97,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
                 Mensaje mensajeClienteServidor = new Mensaje();
                 mensajeClienteServidor.setMensaje("InicioServidor");
                 out.writeObject(mensajeClienteServidor);
-                out.reset();
-                out.close();
                 this.conexion.cerrarConexion();
             }
             
@@ -219,10 +215,10 @@ public class Servidor implements Runnable, Recepcion, Emision {
         //Debemos levantar la IP y Puerto del server redundante de la configuracion
 
         String ipServerRedundante = "localhost";
-        int puertoServerReundante = 8888;
+        int puertoServerRedundante = 8888;
 
         try {
-            this.conexion.crearConexionEnvio(ipServerRedundante, puertoServerReundante);
+            this.conexion.crearConexionEnvio(ipServerRedundante, puertoServerRedundante);
 
             ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
 
@@ -232,6 +228,8 @@ public class Servidor implements Runnable, Recepcion, Emision {
             mensajeSincronizacion.setRegistrados(this.registros);
 
             out.writeObject(mensajeSincronizacion);
+
+            out.close();
 
             this.conexion.cerrarConexion();
 
@@ -296,7 +294,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
     @Override
     public Mensaje recibeMensaje() {
-        ObjectInputStream in = conexion.getInputStreamConexion();
+        ObjectInputStream in = this.conexion.getInputStreamConexion();
         try {
             return (Mensaje) in.readObject();
         } catch (IOException | ClassNotFoundException e) {
