@@ -11,7 +11,7 @@ import java.util.TimerTask;
 
 public class Monitor implements Runnable{
 
-	private static final int INTERVALO_HEARTBEAT = 7000;
+	private static final int INTERVALO_HEARTBEAT = 2000;
 	public static final int puerto = 5555;
     public Conexion conexionMonitor;
 
@@ -32,7 +32,7 @@ public class Monitor implements Runnable{
             int puertoRecibido;
             
     		Timer timer = new Timer();
-    		HeartbeatCheckTask task = new HeartbeatCheckTask(this);
+    		HeartbeatCheckTask task = new HeartbeatCheckTask(this,conexionMonitor);
             timer.schedule(task, 0, INTERVALO_HEARTBEAT);
             
             while (true){
@@ -67,13 +67,16 @@ public class Monitor implements Runnable{
     }
     
     static class HeartbeatCheckTask extends TimerTask {
-        public boolean heartbeatServidorUno=false;
-        public boolean heartbeatServidorDos=false;
+        public boolean heartbeatServidorUno = false;
+        public boolean heartbeatServidorDos = false;
         public boolean primera = true;
         public Monitor monitor;
+        public ObjectOutputStream out;
+        public Conexion conexion;
 
-        public HeartbeatCheckTask(Monitor monitor) {
+        public HeartbeatCheckTask(Monitor monitor,Conexion conexion) {
             this.monitor = monitor;
+            this.conexion = conexion;
         }
 
         @Override
@@ -81,43 +84,61 @@ public class Monitor implements Runnable{
 
         	if(!primera) {
 	            if (heartbeatServidorUno) {
-	                System.out.println("Servidor Uno Activo");
+	                System.out.println("Servidor Primario Activo");
 	                // Realizar la acción correspondiente cuando se recibe el heartbeat correctamente
 	                
 	                // Reiniciar la variable para el siguiente chequeo
 	                heartbeatServidorUno = false;
 	            } else {
-	                System.out.println("Servidor Uno perdido");
-	                // Realizar la acción correspondiente cuando se pierde el heartbeat
-
+	                System.out.println("Servidor Primario Perdido");
+	                // Aviso al servidor 2 que pasa a ser primario
 	                try {
-                        long start = System.currentTimeMillis();
-                        long end = start + 2 * 1000;
-                        while (System.currentTimeMillis() < end) {
+
+	                    this.conexion.crearConexionEnvio("localhost", 8888);
+	                    out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
+	                    Mensaje mensaje = new Mensaje();
+	                    mensaje.setMensaje("SOS PRIMARIO");
+	                    out.writeObject(mensaje);
+	                    this.conexion.cerrarConexion();
+
+                        // Levanto el servidor uno
+                        try {
+                            /*
+                            long start = System.currentTimeMillis();
+                            long end = start + 1000;
+                            while (System.currentTimeMillis() < end) {
+                            }
+                            */
+                            //Runtime.getRuntime().exec("java -jar Server_jar/Server.jar");
+                        } catch (Exception ex) {
+                            System.out.println("No se encontro el ejecutable del servidor 1");
                         }
-                        Runtime.getRuntime().exec("java -jar ServerUno_jar/Server.jar");
-					} catch (Exception e) {
-						System.out.println("No se encontro el ejecutable del servidor 1");
+
+					} catch (IOException e) {
+						System.out.println("LOS DOS SERVIDORES ESTAN CAIDOS");
 					}
+
 	            }
 
 	            
 	            if (heartbeatServidorDos) {
-	                System.out.println("Servidor Dos Activo");
+	                System.out.println("Servidor Secundario Activo");
 	                // Realizar la acción correspondiente cuando se recibe el heartbeat correctamente
 	                
 	                // Reiniciar la variable para el siguiente chequeo
 	                heartbeatServidorDos = false;
 	            } else {
-	                System.out.println("Servidor Dos perdido");
-	                // Realizar la acción correspondiente cuando se pierde el heartbeat
+	                System.out.println("Servidor Secundario Perdido");
+	                // SOLO LO LEVANTO DE NUEVO
 
 	                try {
+                        /*
                         long start = System.currentTimeMillis();
-                        long end = start + 2 * 1000;
+                        long end = start + 1000;
                         while (System.currentTimeMillis() < end) {
                         }
-                        Runtime.getRuntime().exec("java -jar ServerDos_jar/Server.jar");
+                         */
+                        //Runtime.getRuntime().exec("java -jar Server_jar/Server.jar");
 					} catch (Exception e) {
 						System.out.println("No se encontro el ejecutable del servidor 2");
 					}
@@ -128,7 +149,7 @@ public class Monitor implements Runnable{
         }
         
         public void reciboHeartBeatUno() {
-        	this.heartbeatServidorUno=true;
+        	this.heartbeatServidorUno = true;
         }
         
         public void reciboHeartBeatDos() {

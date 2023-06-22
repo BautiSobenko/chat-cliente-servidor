@@ -9,7 +9,5 @@
 	<classpathentry kind="src" path="Server/src"/>
 	<classpathentry kind="src" path="Monitor"/>
 	<classpathentry kind="lib" path="Client/Client_jar/Client.jar"/>
-	<classpathentry kind="lib" path="Server/Server_jar/Server.jar"/>
-	<classpathentry kind="lib" path="Server/Server_jar/ServidorUno.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

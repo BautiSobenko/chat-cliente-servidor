@@ -9,51 +9,35 @@ import vista.vistas.VistaServidor;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Servidor implements Runnable, Recepcion, Emision {
 
-    private int soyServidorPrimario = 1; //Inicio como verdadero y cambio si me demuestran lo contrario
-	
 	private static Servidor servidor = null;
 
     private final VistaServidor vistaServidor;
 
-    private final int puertoServer;
+    private int puertoServer;
 
-    private int puertoOtroServidor;
-    
     private ArrayList<clienteConectado> registros = new ArrayList<clienteConectado>();
     private ArrayList<clienteConectado> conexiones = new ArrayList<clienteConectado>();
 
     private Conexion conexion;
 
-    private Servidor(int puerto){
+    private Servidor(){
 
-        //this.puertoServer = Integer.parseInt(ConfiguracionServer.getConfig().getParametros()[1]);
-
-        this.puertoServer = puerto;
-    	this.vistaServidor = new VistaServidor();
-    	if(this.puertoServer==9090)
-        	this.puertoOtroServidor = 8888;
-        else
-        	this.puertoOtroServidor = 9090;
-        
-        //Tengo que verificar que tipo de servidor es, si es secundario envio solicitud de recincronizacion
+        this.vistaServidor = new VistaServidor();
 
         Thread hiloServer = new Thread(this);
         hiloServer.start();
-
-        Heartbeat hb = new Heartbeat(this,this.puertoServer);
-        Thread hiloHeartbeat = new Thread(hb);
-        hiloHeartbeat.start();
         
     }
     
-    public static Servidor getServer(int puerto){
+    public static Servidor getServer(){
         if( servidor == null ){
-            servidor = new Servidor(puerto);
+            servidor = new Servidor();
         }
         return servidor;
     }
@@ -64,69 +48,88 @@ public class Servidor implements Runnable, Recepcion, Emision {
         String ipOrigen = null;
         int puertoOrigen = 0;
         String nicknameOrigen = null;
+        ObjectOutputStream out;
+        
         try {
 
             this.conexion = new Conexion();
-
-            //ServerSocket
-            conexion.establecerConexion(this.puertoServer);
-
-            this.vistaServidor.muestraMensaje("Servidor Iniciado! \nPuerto: " + this.puertoServer + "\n");
-
-            String ipDestino;
-            String nicknameDestino = null;
-            String msg;
-            Mensaje mensaje;
-            int puertoDestino;
-            ObjectOutputStream out;
             
             //Verifico si esta el otro activo
             try {
-                this.conexion.crearConexionEnvio("localhost", this.puertoOtroServidor);
+                // Existe un 9090 (Primario) en ejecucion?
+                this.conexion.crearConexionEnvio("localhost", 9090);
+                out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
+                Mensaje mensajeClienteServidor = new Mensaje();
+                mensajeClienteServidor.setMensaje("estas?");
+                out.writeObject(mensajeClienteServidor);
+                out.reset();
+                out.close();
+                this.conexion.cerrarConexion();
+                
+                // Si se envia el mensaje, es porque hay un Primario, entonces soy Secundario
+                this.puertoServer = 8888;
+                this.vistaServidor.muestraMensaje("Servidor Iniciado! \nPuerto: " + this.puertoServer + "\n");
+                this.vistaServidor.muestraMensaje("Soy servidor secundario \n\n");
+                conexion.establecerConexion(8888);
+                
+            }
+            catch(Exception e) {
+                // Si no encontre el 9090, soy Primario
+            	this.puertoServer = 9090;
+            	this.vistaServidor.muestraMensaje("Servidor Iniciado! \nPuerto: " + this.puertoServer + "\n");
+            	this.vistaServidor.muestraMensaje("Soy servidor primario \n\n");
+                conexion.establecerConexion(9090);
+            }
+            
+            //Inicio el heartbeat
+            Heartbeat hb = new Heartbeat(this,this.puertoServer);
+            Thread hiloHeartbeat = new Thread(hb);
+            hiloHeartbeat.start();
+
+            String ipDestino;
+            String nicknameDestino;
+            String msg;
+            Mensaje mensaje;
+            int puertoDestino;
+            
+            //Si soy Secundario, le solicito las listas al primario
+            if(this.puertoServer == 8888) {
+                this.conexion.crearConexionEnvio("localhost", 9090);
                 out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
                 Mensaje mensajeClienteServidor = new Mensaje();
                 mensajeClienteServidor.setMensaje("InicioServidor");
                 out.writeObject(mensajeClienteServidor);
+                out.reset();
+                out.close();
                 this.conexion.cerrarConexion();
             }
-            catch(Exception ignored) {
-            }
-            
-            //Cuando inicio el servidor mando al otro servidor que me inicie
-            //Si el otro servidor esta activo, me contestara, sino me mantengo como servidor primario
-            
             
             while (true) {
-            	
+
                 conexion.aceptarConexion();
-
-                mensaje = this.recibeMensaje();
-                msg = mensaje.getMensaje();
-
-                if ( msg.equals("SINCRONIZACION") ) {
-   
+        
+               mensaje = this.recibeMensaje();
+               msg = mensaje.getMensaje();
+                
+               if(msg.equals("estas?")) {
+            	   
+               }
+               else if ( msg.equals("SOS PRIMARIO") ) {
+            	    this.puertoServer = 9090;
+                	this.vistaServidor.muestraMensaje("PASE A SER PRIMARIO \n\n");
+                	this.vistaServidor.muestraMensaje("Puerto: " + this.puertoServer + "\n");
+                	//Establezco conexion en el 9090
+                	conexion.cerrarServer();
+                	conexion.establecerConexion(9090);
+            	}
+                else if ( msg.equals("SINCRONIZACION") ) {
                     this.conexiones = mensaje.getConectados();
                     this.registros = mensaje.getRegistrados();   
             	}
                 else if(msg.equals("InicioServidor")) {
-                    //Se inicio el otro servidor y me esta avisando
-                    //Le contesto que yo soy primario
-            		this.conexion.crearConexionEnvio("localhost", this.puertoOtroServidor);
-                    out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
-                    mensaje = new Mensaje();
-                    mensaje.setMensaje("SosSegundoComoFrancia");
-                    mensaje.setConectados(this.conexiones);
-                    mensaje.setRegistrados(this.registros);
-                    out.writeObject(mensaje);
-                    this.conexion.cerrarConexion();
+            		this.sincronizacionRedundancia();
                 }
                 else {
-                    if(msg.equals("SosSegundoComoFrancia")) {
-                		//El otro servidor me aviso que el es el primario
-                		this.soyServidorPrimario = 0;
-                		this.conexiones = mensaje.getConectados();
-                		this.registros = mensaje.getRegistrados();
-                	}else {
 
                     puertoDestino = mensaje.getPuertoDestino();
                     ipDestino = mensaje.getIpDestino();
@@ -179,14 +182,11 @@ public class Servidor implements Runnable, Recepcion, Emision {
                         this.conexion.cerrarConexion();
                     }
 
-                }
-
 
             }
 
         }
         }catch (IOException e) {
-
             try {
 
                 Mensaje mensaje = new Mensaje();
@@ -194,7 +194,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
                 this.conexion.crearConexionEnvio(ipOrigen, puertoOrigen);
 
-                ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
+                out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
                 out.writeObject(mensaje);
 
                 this.vistaServidor.muestraMensaje("ERROR EN CONEXION: "+ nicknameOrigen +" | "+ ipOrigen + " | " + puertoOrigen + "\n\n");
@@ -219,13 +219,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
         //Debemos levantar la IP y Puerto del server redundante de la configuracion
 
         String ipServerRedundante = "localhost";
-        int puertoServerReundante = 0;
-        
-        if(this.puertoServer==9090)
-        	puertoServerReundante = 8888;
-        else
-        	puertoServerReundante = 9090;
-        	
+        int puertoServerReundante = 8888;
 
         try {
             this.conexion.crearConexionEnvio(ipServerRedundante, puertoServerReundante);
@@ -241,10 +235,10 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
             this.conexion.cerrarConexion();
 
-        } catch (IOException e) {
-            this.vistaServidor.muestraMensaje("ERROR EN CONEXION - SINCRONIZACION CON REDUNDANCIA \n");
+        } catch (Exception e) {
+            this.vistaServidor.muestraMensaje("ERROR EN CONEXION CON SERVIDOR REDUNDANTE \n");
+            e.printStackTrace();
         }
-
 
     }
 
@@ -331,6 +325,10 @@ public class Servidor implements Runnable, Recepcion, Emision {
    
     public Conexion getConexion() {
     	return this.conexion;
+    }
+    
+    public int getPuertoServer() {
+    	return this.puertoServer;
     }
     
 }

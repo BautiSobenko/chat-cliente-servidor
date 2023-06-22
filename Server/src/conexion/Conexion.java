@@ -19,7 +19,7 @@ public class Conexion implements IConexion {
             int puertoOrigen = (int) args[0];
             this.serverSocket = new ServerSocket(puertoOrigen);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
@@ -64,7 +64,7 @@ public class Conexion implements IConexion {
         try {
             this.serverSocket.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+        	e.printStackTrace();
         }
     }
 

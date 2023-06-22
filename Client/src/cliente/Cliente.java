@@ -52,9 +52,9 @@ public class Cliente implements Runnable, Emision, Recepcion {
     	boolean envio = true;
         
     	try {
-    		this.conexion.crearConexionEnvio(this.ipServer, this.puertoServidor);
-    	}
-    	catch(Exception e) {
+    		this.conexion.crearConexionEnvio(this.ipServer, 9090); //Cambiar 9090 a this.puertoServidor y corregir en el archivo
+    	}/*
+    	    catch(Exception e) {
     		try {
     			if(this.puertoServidor == 9090) {
 	    			this.conexion.crearConexionEnvio(this.ipServer,8888);
@@ -64,12 +64,11 @@ public class Cliente implements Runnable, Emision, Recepcion {
                     this.conexion.crearConexionEnvio(this.ipServer, 9090);
                     this.puertoServidor = 9090;
                 }
-    		}
+    		}*/
     		catch(Exception ex) {
     			ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor");
     			envio = false;
     		}
-    	}
     	
     	if(envio) {
 	    	try {
@@ -126,24 +125,23 @@ public class Cliente implements Runnable, Emision, Recepcion {
     	boolean envio = true;
     	
     	try {
-    		this.conexion.crearConexionEnvio(this.ipServer, this.puertoServidor);
-    	}
+    		this.conexion.crearConexionEnvio(this.ipServer, 9090); //Cambiar 9090 a this.puertoServidor y corregir en el archivo
+    	}/*
     	catch(Exception e) {
     		try {
-    			if(this.puertoServidor==9090) {
+    			if(this.puertoServidor == 9090) {
 	    			this.conexion.crearConexionEnvio(this.ipServer,8888);
 	    			this.puertoServidor = 8888;
     			}
-    		else {
-    			this.conexion.crearConexionEnvio(this.ipServer, 9090);
-    			this.puertoServidor = 9090;
-    		}
-    		}
+                else {
+                    this.conexion.crearConexionEnvio(this.ipServer, 9090);
+                    this.puertoServidor = 9090;
+                }
+    		}*/
     		catch(Exception ex) {
     			ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor");
     			envio = false;
     		}
-    	}
 
     	if(envio) {
     		try {
