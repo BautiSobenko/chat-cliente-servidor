@@ -35,14 +35,13 @@ public class Heartbeat implements Runnable{
         
         public void run() {
             // Le mando mensaje al monitor
-        	conexion = server.getConexion();
+        	conexion = new Conexion();
         	try {
 	        	this.conexion.crearConexionEnvio("localhost", this.puertoMonitor);
 	            out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
 	            Mensaje mensajeClienteServidor = new Mensaje();
 	            mensajeClienteServidor.setMensaje(Integer.toString(server.getPuertoServer()));
 	            out.writeObject(mensajeClienteServidor);
-	            out.close();
 	            this.conexion.cerrarConexion();
         	}
         	catch(Exception ignored) {}

@@ -1,7 +1,6 @@
 package servidor;
 
 import conexion.Conexion;
-import configuracion.ConfiguracionServer;
 import mensaje.Mensaje;
 import mensaje.clienteConectado;
 import vista.vistas.VistaServidor;
@@ -9,7 +8,6 @@ import vista.vistas.VistaServidor;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -104,24 +102,24 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
                 conexion.aceptarConexion();
         
-               mensaje = this.recibeMensaje();
-               msg = mensaje.getMensaje();
+                mensaje = this.recibeMensaje();
+                msg = mensaje.getMensaje();
                 
-               if(msg.equals("estas?")) {
+                if(msg.equals("estas?")) {
             	   
-               }
-               else if ( msg.equals("SOS PRIMARIO") ) {
+                }
+                else if ( msg.equals("SOS PRIMARIO") ) {
             	    this.puertoServer = 9090;
                 	this.vistaServidor.muestraMensaje("PASE A SER PRIMARIO \n\n");
                 	this.vistaServidor.muestraMensaje("Puerto: " + this.puertoServer + "\n");
                 	//Establezco conexion en el 9090
                 	conexion.cerrarServer();
                 	conexion.establecerConexion(9090);
-            	}
+                }
                 else if ( msg.equals("SINCRONIZACION") ) {
                     this.conexiones = mensaje.getConectados();
                     this.registros = mensaje.getRegistrados();   
-            	}
+                }
                 else if(msg.equals("InicioServidor")) {
             		this.sincronizacionRedundancia();
                 }
@@ -234,7 +232,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
         } catch (Exception e) {
             this.vistaServidor.muestraMensaje("ERROR EN CONEXION CON SERVIDOR REDUNDANTE \n");
-            e.printStackTrace();
         }
 
     }

@@ -109,7 +109,7 @@ public class Monitor implements Runnable{
                             while (System.currentTimeMillis() < end) {
                             }
                             */
-                            //Runtime.getRuntime().exec("java -jar Server_jar/Server.jar");
+                            Runtime.getRuntime().exec("java -jar Server_jar/Server.jar");
                         } catch (Exception ex) {
                             System.out.println("No se encontro el ejecutable del servidor 1");
                         }
@@ -138,7 +138,7 @@ public class Monitor implements Runnable{
                         while (System.currentTimeMillis() < end) {
                         }
                          */
-                        //Runtime.getRuntime().exec("java -jar Server_jar/Server.jar");
+                        Runtime.getRuntime().exec("java -jar Server_jar/Server.jar");
 					} catch (Exception e) {
 						System.out.println("No se encontro el ejecutable del servidor 2");
 					}
