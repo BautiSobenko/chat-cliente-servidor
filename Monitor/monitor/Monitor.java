@@ -24,7 +24,7 @@ public class Monitor implements Runnable{
         try {
 
             this.conexionMonitor = new Conexion();
-            //ServerSocket
+
             conexionMonitor.establecerConexion(puerto);
             
             Mensaje mensaje;
@@ -85,8 +85,7 @@ public class Monitor implements Runnable{
         	if(!primera) {
 	            if (heartbeatServidorUno) {
 	                System.out.println("Servidor Primario Activo");
-	                // Realizar la acción correspondiente cuando se recibe el heartbeat correctamente
-	                
+
 	                // Reiniciar la variable para el siguiente chequeo
 	                heartbeatServidorUno = false;
 	            } else {
@@ -103,13 +102,7 @@ public class Monitor implements Runnable{
 
                         // Levanto el servidor uno
                         try {
-                            /*
-                            long start = System.currentTimeMillis();
-                            long end = start + 1000;
-                            while (System.currentTimeMillis() < end) {
-                            }
-                            */
-                           //Runtime.getRuntime().exec("java -jar Server_jar/Server.jar");
+                           Runtime.getRuntime().exec("java -jar Server_jar/Server.jar");
                         } catch (Exception ex) {
                             System.out.println("No se encontro el ejecutable del servidor 1");
                         }
@@ -123,29 +116,22 @@ public class Monitor implements Runnable{
 	            
 	            if (heartbeatServidorDos) {
 	                System.out.println("Servidor Secundario Activo");
-	                // Realizar la acción correspondiente cuando se recibe el heartbeat correctamente
-	                
+
 	                // Reiniciar la variable para el siguiente chequeo
 	                heartbeatServidorDos = false;
 	            } else {
 	                System.out.println("Servidor Secundario Perdido");
-	                // SOLO LO LEVANTO DE NUEVO
+	                // Solo lo levanto de nuevo
 
 	                try {
-                        /*
-                        long start = System.currentTimeMillis();
-                        long end = start + 1000;
-                        while (System.currentTimeMillis() < end) {
-                        }
-                         */
-                        //Runtime.getRuntime().exec("java -jar Server_jar/Server.jar");
+                        Runtime.getRuntime().exec("java -jar Server_jar/Server.jar");
 					} catch (Exception e) {
 						System.out.println("No se encontro el ejecutable del servidor 2");
 					}
 	            }
         	}
         	else
-        		primera=false;
+        		primera = false;
         }
         
         public void reciboHeartBeatUno() {
