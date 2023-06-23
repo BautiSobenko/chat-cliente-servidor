@@ -146,19 +146,22 @@ public class Servidor implements Runnable, Recepcion, Emision {
                             this.eliminaConectado(ipOrigen, puertoOrigen);
                             this.eliminaConectado(ipDestino, puertoDestino);
                             this.sincronizacionRedundancia();
-                            mensaje.setConectados(this.getClientesFueraDeSesion());
+                            //mensaje.setConectados(this.getClientesFueraDeSesion());
+                            mensaje.setConectados(this.registros);
                         } else if (msg.equalsIgnoreCase("REGISTRO")) {
 
                             if (this.registrarCliente(ipOrigen, puertoOrigen, nicknameOrigen)) {
                                 msg = "REGISTRO EXITOSO";
-                                mensaje.setConectados(this.getClientesFueraDeSesion());
+                                //mensaje.setConectados(this.getClientesFueraDeSesion());
+                                mensaje.setConectados(this.registros);
                                 this.sincronizacionRedundancia();
                             } else
                                 msg = "REGISTRO FALLIDO";
 
                             mensaje.setMensaje(msg);
                         } else if (msg.equalsIgnoreCase("RECARGAR CONECTADOS")) {
-                            mensaje.setConectados(this.getClientesFueraDeSesion());
+                           // mensaje.setConectados(this.getClientesFueraDeSesion());
+                        	mensaje.setConectados(this.registros);
                         } else if ((msg.equalsIgnoreCase("LLAMADA") && verificaConexion(ipDestino, puertoDestino))) {
                             msg = "OCUPADO";
                             mensaje.setMensaje(msg);
