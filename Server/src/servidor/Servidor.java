@@ -136,6 +136,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
                   if (msg.equals("ELIMINA REGISTRO")) {
                         this.eliminaRegistro(ipOrigen, puertoOrigen);
                         this.vistaServidor.muestraMensaje("BAJA CLIENTE: " + nicknameOrigen + " | " + ipOrigen + " | " + puertoOrigen + "\n\n");
+                        this.sincronizacionRedundancia();
                   }else {
 
                         if (msg.equalsIgnoreCase("LLAMADA ACEPTADA")) {
@@ -145,14 +146,12 @@ public class Servidor implements Runnable, Recepcion, Emision {
                         } else if (msg.equalsIgnoreCase("DESCONECTAR")) {
                             this.eliminaConectado(ipOrigen, puertoOrigen);
                             this.eliminaConectado(ipDestino, puertoDestino);
-                            this.sincronizacionRedundancia();
-                            //mensaje.setConectados(this.getClientesFueraDeSesion());
                             mensaje.setConectados(this.registros);
+                            this.sincronizacionRedundancia();
                         } else if (msg.equalsIgnoreCase("REGISTRO")) {
 
                             if (this.registrarCliente(ipOrigen, puertoOrigen, nicknameOrigen)) {
                                 msg = "REGISTRO EXITOSO";
-                                //mensaje.setConectados(this.getClientesFueraDeSesion());
                                 mensaje.setConectados(this.registros);
                                 this.sincronizacionRedundancia();
                             } else
@@ -160,7 +159,6 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
                             mensaje.setMensaje(msg);
                         } else if (msg.equalsIgnoreCase("RECARGAR CONECTADOS")) {
-                           // mensaje.setConectados(this.getClientesFueraDeSesion());
                         	mensaje.setConectados(this.registros);
                         } else if ((msg.equalsIgnoreCase("LLAMADA") && verificaConexion(ipDestino, puertoDestino))) {
                             msg = "OCUPADO";

@@ -22,7 +22,6 @@ public class Cliente implements Runnable, Emision, Recepcion {
 
     public final Conexion conexion;
 
-    private int puertoServidor;
     private int puertoDestino;
     private int puertoOrigen;
     private String ipServer;
