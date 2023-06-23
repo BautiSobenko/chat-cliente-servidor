@@ -13,7 +13,7 @@ import java.awt.event.WindowListener;
 public class ControladorSesionLlamada implements ActionListener, WindowListener {
 
     private static ControladorSesionLlamada controladorSesionLlamada = null;
-
+    private boolean envio;
     private final IVistaSesionLlamada vista;
 
     private ControladorSesionLlamada() {
@@ -63,7 +63,8 @@ public class ControladorSesionLlamada implements ActionListener, WindowListener 
                 mensaje = vista.getMensaje();
                 vista.limpiarCampo();
                 Cliente.getCliente().enviaMensaje(mensaje);
-                this.muestraMensaje("Yo: " + mensaje);
+                if(envio)
+                	this.muestraMensaje("Yo: " + mensaje);
             }
             case ("Desconectar") -> {
                 Cliente.getCliente().enviaMensaje("DESCONECTAR");
@@ -111,5 +112,9 @@ public class ControladorSesionLlamada implements ActionListener, WindowListener 
     @Override
     public void windowDeactivated(WindowEvent e) {
 
+    }
+    
+    public void setEnvio(boolean env) {
+    	this.envio = env;
     }
 }

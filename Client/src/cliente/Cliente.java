@@ -53,23 +53,13 @@ public class Cliente implements Runnable, Emision, Recepcion {
         
     	try {
     		this.conexion.crearConexionEnvio(this.ipServer, 9090); //Cambiar 9090 a this.puertoServidor y corregir en el archivo
-    	}/*
-    	    catch(Exception e) {
-    		try {
-    			if(this.puertoServidor == 9090) {
-	    			this.conexion.crearConexionEnvio(this.ipServer,8888);
-	    			this.puertoServidor = 8888;
-    			}
-                else {
-                    this.conexion.crearConexionEnvio(this.ipServer, 9090);
-                    this.puertoServidor = 9090;
-                }
-    		}*/
+    	}
     		catch(Exception ex) {
-    			ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor");
+    			ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor. Por favor reintentelo mas tarde");
     			envio = false;
+    			ControladorSesionLlamada.get(false).setEnvio(envio);
     		}
-    	
+    	ControladorSesionLlamada.get(false).setEnvio(envio);
     	if(envio) {
 	    	try {
 
@@ -115,7 +105,7 @@ public class Cliente implements Runnable, Emision, Recepcion {
 	            conexion.cerrarConexion();
 	
 	        } catch (Exception e) {
-	            ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor");
+	            ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor. Por favor reintentelo mas tarde.");
 	        }
     	}
     }
@@ -126,20 +116,9 @@ public class Cliente implements Runnable, Emision, Recepcion {
     	
     	try {
     		this.conexion.crearConexionEnvio(this.ipServer, 9090); //Cambiar 9090 a this.puertoServidor y corregir en el archivo
-    	}/*
-    	catch(Exception e) {
-    		try {
-    			if(this.puertoServidor == 9090) {
-	    			this.conexion.crearConexionEnvio(this.ipServer,8888);
-	    			this.puertoServidor = 8888;
-    			}
-                else {
-                    this.conexion.crearConexionEnvio(this.ipServer, 9090);
-                    this.puertoServidor = 9090;
-                }
-    		}*/
+    	}
     		catch(Exception ex) {
-    			ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor");
+    			ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor. Por favor reintentelo mas tarde.");
     			envio = false;
     		}
 
