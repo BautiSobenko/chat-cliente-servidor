@@ -46,8 +46,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
         String ipOrigen = null;
         int puertoOrigen = 0;
         String nicknameOrigen = null;
-        ObjectOutputStream out;
-        
+
         try {
 
             this.conexion = new Conexion();
@@ -55,13 +54,12 @@ public class Servidor implements Runnable, Recepcion, Emision {
             //Verifico si esta el otro activo
             try {
                 // Existe un 9090 (Primario) en ejecucion?
-                this.conexion.crearConexionEnvio("localhost", 9090);
-                out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
-                Mensaje mensajeClienteServidor = new Mensaje();
-                mensajeClienteServidor.setMensaje("estas?");
-                out.writeObject(mensajeClienteServidor);
-                this.conexion.cerrarConexion();
-                
+
+                Mensaje mensajeServer = new Mensaje();
+                mensajeServer.setMensaje("estas?");
+
+                this.enviaMensaje("localhost", 9090, mensajeServer);
+
                 // Si se envia el mensaje, es porque hay un Primario, entonces soy Secundario
                 this.puertoServer = 8888;
                 this.vistaServidor.muestraMensaje("Servidor Iniciado! \nPuerto: " + this.puertoServer + "\n");
@@ -90,12 +88,12 @@ public class Servidor implements Runnable, Recepcion, Emision {
             
             //Si soy Secundario, le solicito las listas al primario
             if(this.puertoServer == 8888) {
-                this.conexion.crearConexionEnvio("localhost", 9090);
-                out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
-                Mensaje mensajeClienteServidor = new Mensaje();
-                mensajeClienteServidor.setMensaje("InicioServidor");
-                out.writeObject(mensajeClienteServidor);
-                this.conexion.cerrarConexion();
+
+                Mensaje mensajeServer = new Mensaje();
+                mensajeServer.setMensaje("InicioServidor");
+
+                this.enviaMensaje("localhost", 9090, mensajeServer );
+
             }
             
             while (true) {
@@ -168,13 +166,9 @@ public class Servidor implements Runnable, Recepcion, Emision {
                         this.vistaServidor.muestraMensaje("ORIGEN: " + ipOrigen + " => DESTINO: " + ipDestino + " :\n" + msg + "\n\n");
 
                         //Reenvio del mensaje
-                        this.conexion.crearConexionEnvio(ipDestino, puertoDestino);
 
-                        out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
+                        this.enviaMensaje(ipDestino, puertoDestino, mensaje);
 
-                        out.writeObject(mensaje);
-
-                        this.conexion.cerrarConexion();
                     }
 
 
@@ -187,14 +181,10 @@ public class Servidor implements Runnable, Recepcion, Emision {
                 Mensaje mensaje = new Mensaje();
                 mensaje.setMensaje("ERROR LLAMADA");
 
-                this.conexion.crearConexionEnvio(ipOrigen, puertoOrigen);
-
-                out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
-                out.writeObject(mensaje);
-
                 this.vistaServidor.muestraMensaje("ERROR EN CONEXION: "+ nicknameOrigen +" | "+ ipOrigen + " | " + puertoOrigen + "\n\n");
 
-                this.conexion.cerrarConexion();
+                this.enviaMensaje(ipOrigen, puertoOrigen, mensaje);
+
 
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
@@ -217,19 +207,13 @@ public class Servidor implements Runnable, Recepcion, Emision {
         int puertoServerRedundante = 8888;
 
         try {
-            this.conexion.crearConexionEnvio(ipServerRedundante, puertoServerRedundante);
-
-            ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
 
             Mensaje mensajeSincronizacion = new Mensaje();
             mensajeSincronizacion.setMensaje("SINCRONIZACION");
             mensajeSincronizacion.setConectados(this.conexiones);
             mensajeSincronizacion.setRegistrados(this.registros);
 
-            out.writeObject(mensajeSincronizacion);
-
-
-            this.conexion.cerrarConexion();
+            this.enviaMensaje(ipServerRedundante, puertoServerRedundante, mensajeSincronizacion);
 
         } catch (Exception e) {
             this.vistaServidor.muestraMensaje("ERROR EN CONEXION CON SERVIDOR REDUNDANTE \n");
@@ -238,25 +222,15 @@ public class Servidor implements Runnable, Recepcion, Emision {
     }
 
     @Override
-    public void enviaMensaje(String msg) {
+    public void enviaMensaje(String ip, int puerto, Mensaje msg) throws IOException {
 
-    }
+        this.conexion.crearConexionEnvio(ip, puerto);
 
-    public ArrayList<clienteConectado> getClientesFueraDeSesion() {
+        ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
 
-        ArrayList<clienteConectado> clientesFueraDeSesion = new ArrayList<>();
+        out.writeObject(msg);
 
-        for ( clienteConectado clienteRegistrado : this.registros ) {
-
-            boolean enSesion = this.conexiones.stream().anyMatch( c -> c.getIp().equals(clienteRegistrado.getIp()) && clienteRegistrado.getPuerto() == c.getPuerto());
-
-            if( !enSesion )
-                clientesFueraDeSesion.add(clienteRegistrado);
-
-
-        }
-
-        return clientesFueraDeSesion;
+        this.conexion.cerrarConexion();
 
     }
 

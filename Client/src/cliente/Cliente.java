@@ -265,10 +265,6 @@ public class Cliente implements Runnable, Emision, Recepcion {
         this.ipServer = ipServer;
     }
 
-    public void setPuertoServidor(int puertoServidor) {
-        this.puertoServidor = puertoServidor;
-    }
-
     public void setIpOrigen(String ipOrigen) {
         this.ipOrigen = ipOrigen;
     }

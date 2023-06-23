@@ -32,7 +32,6 @@ public class ControladorInicio implements ActionListener, WindowListener {
     public void startCliente() {
         this.cliente = Cliente.getCliente();
 
-        this.cliente.setPuertoServidor(ConfiguracionServer.getConfig().getPuerto());
         this.cliente.setIpServer(ConfiguracionServer.getConfig().getIp());
 
         this.cliente.setPuertoOrigen(miPuerto); //Lo seteo para evitar problemas en el ServerSocket en el run()
