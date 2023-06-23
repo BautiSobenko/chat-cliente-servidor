@@ -9,13 +9,11 @@ import mensaje.Mensaje;
 
 public class Heartbeat implements Runnable{
     private static final int INTERVALO_HEARTBEAT = 1000; // Intervalo de tiempo entre cada heartbeat en milisegundos
-    private int puerto;
-    private Servidor server;
+    private final Servidor server;
     
-    public Heartbeat(Servidor server,int puerto) {
+    public Heartbeat(Servidor server) {
 		super();
 		this.server = server;
-		this.puerto = puerto;
 	}
 
 	@Override
@@ -29,7 +27,7 @@ public class Heartbeat implements Runnable{
 	
 	static class HeartbeatTask extends TimerTask {
         ObjectOutputStream out;
-        private int puertoMonitor = 5555; ///Actualizar el puerto del monitor con el que elijamos
+        private final int puertoMonitor = 5555; ///Actualizar el puerto del monitor con el que elijamos
         public Servidor server;
         public Conexion conexion;
         

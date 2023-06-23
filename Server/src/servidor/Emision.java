@@ -6,5 +6,5 @@ import java.io.IOException;
 
 public interface Emision {
 
-    public void enviaMensaje(String ip, int puerto, Mensaje msg) throws IOException;
+    void enviaMensaje(String ip, int puerto, Mensaje msg) throws IOException;
 }
