@@ -64,7 +64,8 @@ public class ControladorInicio implements ActionListener, WindowListener {
     }
 
     public void lanzarAviso(String msg){
-        this.vista.lanzarVentanaEmergente(msg);
+    	if(msg!=null && !msg.equals(""))
+    		this.vista.lanzarVentanaEmergente(msg);
     }
 
     public void error(String msg) {

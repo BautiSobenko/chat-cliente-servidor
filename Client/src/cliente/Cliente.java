@@ -205,6 +205,7 @@ public class Cliente implements Runnable, Emision, Recepcion {
                     ControladorSesionLlamada.get(false).esconderVista();
                     ControladorSesionLlamada.get(false).borrarHistorial();
                     ControladorInicio.get(false).limpiarCampos();
+                    ControladorInicio.get(false).lanzarAviso("El usuario "+nickname+" se ha desconectado.");
                     ControladorInicio.get(true).setListaConectados(mensajeRecibido.getConectados());
                     this.publicKeyExtremo = null;
                 }
