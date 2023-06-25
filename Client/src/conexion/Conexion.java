@@ -78,32 +78,16 @@ public class Conexion implements IConexion {
 
     }
 
-    public int getPuertoOrigen() {
-        return puertoOrigen;
-    }
-
-    public int getPuertoDestino() {
-        return puertoDestino;
-    }
-
-    public ServerSocket getServerSocket() {
-        return serverSocket;
-    }
-
-    public Socket getSocket() {
-        return socket;
-    }
-    
+    @Override
     public void enviaMensaje(Mensaje mensaje) {
         try {
-        	ObjectOutputStream out = getOutputStreamConexion();//new ObjectOutputStream(sCliente.getOutputStream());
-			out.writeObject(mensaje);
-			out.close();
-			cerrarConexion();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            ObjectOutputStream out = getOutputStreamConexion();//new ObjectOutputStream(sCliente.getOutputStream());
+            out.writeObject(mensaje);
+            out.close();
+            cerrarConexion();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 

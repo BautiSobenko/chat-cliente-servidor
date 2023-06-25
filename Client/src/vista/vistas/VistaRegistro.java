@@ -19,25 +19,6 @@ public class VistaRegistro extends JFrame implements IVistaConfiguracion {
 	private final JLabel lblDireccionIP;
 	private JTextField txtNickName;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VistaRegistro frame = new VistaRegistro();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
 	public VistaRegistro() {
 		setTitle("Registro en Servidor");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

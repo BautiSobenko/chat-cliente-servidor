@@ -5,10 +5,10 @@
    <string>192.168.56.1</string>
   </void>
   <void property="nickname">
-   <string>Bautista</string>
+   <string>pepe2</string>
   </void>
   <void property="puerto">
-   <int>1000</int>
+   <int>5000</int>
   </void>
  </object>
 </java>

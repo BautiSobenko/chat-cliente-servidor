@@ -1,5 +1,7 @@
 package conexion;
 
+import mensaje.Mensaje;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -27,15 +29,6 @@ public class Conexion implements IConexion {
     public ObjectInputStream getInputStreamConexion() {
         try {
             return new ObjectInputStream( this.socket.getInputStream() );
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public ObjectOutputStream getOutputStreamConexion() {
-        try {
-            return new ObjectOutputStream( this.socket.getOutputStream() );
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -74,6 +67,13 @@ public class Conexion implements IConexion {
         int puertoServidor = (int) args[1];
         this.socket = new Socket(ipServer,puertoServidor);
 
+    }
+
+    @Override
+    public void enviaMensaje(Mensaje mensaje) throws IOException {
+        ObjectOutputStream out = new ObjectOutputStream(this.getSocket().getOutputStream());
+
+        out.writeObject(mensaje);
     }
 
     public int getPuertoOrigen() {

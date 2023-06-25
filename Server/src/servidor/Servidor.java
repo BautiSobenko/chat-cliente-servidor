@@ -89,7 +89,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
             //Si soy Secundario, le solicito las listas al primario
             if(this.puertoServer == 8888) {
                 Mensaje mensajeServer = new Mensaje();
-                mensajeServer.setMensaje("InicioServidor");
+                mensajeServer.setMensaje("INICIO SERVIDOR");
 
                 this.enviaMensaje("localhost", 9090, mensajeServer );
             }
@@ -101,10 +101,18 @@ public class Servidor implements Runnable, Recepcion, Emision {
                 mensaje = this.recibeMensaje();
                 msg = mensaje.getMensaje();
 
-                if (msg.equals("estas?")) {
+                puertoDestino = mensaje.getPuertoDestino();
+                ipDestino = mensaje.getIpDestino();
+                nicknameDestino = mensaje.getNicknameDestino();
+
+                puertoOrigen = mensaje.getPuertoOrigen();
+                ipOrigen = mensaje.getIpOrigen();
+                nicknameOrigen = mensaje.getNicknameOrigen();
+
+                if (msg.equalsIgnoreCase("estas?")) {
 
                 }
-                else if ( msg.equals("SOS PRIMARIO") ) {
+                else if ( msg.equalsIgnoreCase("SOS PRIMARIO") ) {
             	    this.puertoServer = 9090;
                 	this.vistaServidor.muestraMensaje("PASE A SER PRIMARIO \n\n");
                 	this.vistaServidor.muestraMensaje("Puerto: " + this.puertoServer + "\n");
@@ -112,32 +120,24 @@ public class Servidor implements Runnable, Recepcion, Emision {
                 	conexion.cerrarServer();
                 	conexion.establecerConexion(9090);
                 }
-                else if ( msg.equals("SINCRONIZACION") ) {
+                else if ( msg.equalsIgnoreCase("SINCRONIZACION") ) {
                     this.conexiones = mensaje.getConectados();
                     this.registros = mensaje.getRegistrados();
                 }
-                else if(msg.equals("InicioServidor")) {
+                else if(msg.equalsIgnoreCase("INICIO SERVIDOR")) {
             		this.sincronizacionRedundancia();
+                }
+                else if (msg.equalsIgnoreCase("ELIMINA REGISTRO")) {
+                    this.eliminaRegistro(ipOrigen, puertoOrigen);
+                    this.vistaServidor.muestraMensaje("BAJA CLIENTE: " + nicknameOrigen + " | " + ipOrigen + " | " + puertoOrigen + "\n\n");
+                    this.sincronizacionRedundancia();
                 }
                 else {
 
-                    puertoDestino = mensaje.getPuertoDestino();
-                    ipDestino = mensaje.getIpDestino();
-                    nicknameDestino = mensaje.getNicknameDestino();
-
-                    puertoOrigen = mensaje.getPuertoOrigen();
-                    ipOrigen = mensaje.getIpOrigen();
-                    nicknameOrigen = mensaje.getNicknameOrigen();
-
-                    if (msg.equals("ELIMINA REGISTRO")) {
-                        this.eliminaRegistro(ipOrigen, puertoOrigen);
-                        this.vistaServidor.muestraMensaje("BAJA CLIENTE: " + nicknameOrigen + " | " + ipOrigen + " | " + puertoOrigen + "\n\n");
+                    if (msg.equalsIgnoreCase("LLAMADA ACEPTADA")) {
+                        this.agregaConectado(ipOrigen, puertoOrigen, nicknameOrigen);
+                        this.agregaConectado(ipDestino, puertoDestino, nicknameDestino);
                         this.sincronizacionRedundancia();
-                    }
-                    else if (msg.equalsIgnoreCase("LLAMADA ACEPTADA")) {
-                            this.agregaConectado(ipOrigen, puertoOrigen, nicknameOrigen);
-                            this.agregaConectado(ipDestino, puertoDestino, nicknameDestino);
-                            this.sincronizacionRedundancia();
                     }
                     else if (msg.equalsIgnoreCase("DESCONECTAR")) {
                         this.eliminaConectado(ipOrigen, puertoOrigen);
@@ -222,9 +222,7 @@ public class Servidor implements Runnable, Recepcion, Emision {
 
         this.conexion.crearConexionEnvio(ip, puerto);
 
-        ObjectOutputStream out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
-
-        out.writeObject(msg);
+        this.conexion.enviaMensaje(msg);
 
         this.conexion.cerrarConexion();
 
