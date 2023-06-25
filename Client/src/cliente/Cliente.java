@@ -51,7 +51,7 @@ public class Cliente implements Runnable, Emision, Recepcion {
     	boolean envio = true;
         
     	try {
-    		this.conexion.crearConexionEnvio(this.ipServer, 9090); //Cambiar 9090 a this.puertoServidor y corregir en el archivo
+    		this.conexion.crearConexionEnvio(this.ipServer, 9090);
     	}
     		catch(Exception ex) {
     			ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor. Por favor reintentelo mas tarde");
@@ -207,16 +207,6 @@ public class Cliente implements Runnable, Emision, Recepcion {
                 }
                 else if (txt.equalsIgnoreCase("REGISTRO FALLIDO")) {
                     ControladorRegistro.get(false).registroCliente(false,mensajeRecibido.getConectados());
-
-                    //Si el registro falla, debo mantener los cambios previos a esa configuracion
-                    //TO-DO Habria que hacer un nuevo mensaje de actualizar configuracion
-                    //Ya que el Registro y configuracion se comportan diferente
-
-                    /*
-                    ControladorInicio.get(false).setMiPuerto(ControladorConfiguracion.get(false).getPuertoAntiguo());
-                    ControladorInicio.get(false).setMiNickname(ControladorConfiguracion.get(false).getNicknameAntiguo());
-                    ControladorInicio.get(false).actualizarTituloVista();
-                     */
                 }
                 else if (txt.equalsIgnoreCase("ERROR LLAMADA")) {
                     ControladorInicio.get(true).error("Error en la conexion");
@@ -235,9 +225,7 @@ public class Cliente implements Runnable, Emision, Recepcion {
 
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception ignored) { }
 
 
     }

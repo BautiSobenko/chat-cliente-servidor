@@ -26,7 +26,6 @@ public class Heartbeat implements Runnable{
 	
 	
 	static class HeartbeatTask extends TimerTask {
-        ObjectOutputStream out;
         private final int puertoMonitor = 5555; ///Actualizar el puerto del monitor con el que elijamos
         public Servidor server;
         public Conexion conexion;
@@ -36,10 +35,9 @@ public class Heartbeat implements Runnable{
         	conexion = new Conexion();
         	try {
 	        	this.conexion.crearConexionEnvio("localhost", this.puertoMonitor);
-	            out = new ObjectOutputStream(this.conexion.getSocket().getOutputStream());
 	            Mensaje mensajeClienteServidor = new Mensaje();
 	            mensajeClienteServidor.setMensaje(Integer.toString(server.getPuertoServer()));
-	            out.writeObject(mensajeClienteServidor);
+				this.conexion.enviaMensaje(mensajeClienteServidor);
 	            this.conexion.cerrarConexion();
         	}
         	catch(Exception ignored) {}
