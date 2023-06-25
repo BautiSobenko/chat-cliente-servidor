@@ -97,11 +97,7 @@ public class Cliente implements Runnable, Emision, Recepcion {
 	                mensaje.setMensaje( this.rsa.encriptar(msg, this.publicKeyExtremo) ); //Encripto con la llave publica que me envio
 	
 	
-	            ObjectOutputStream out = this.conexion.getOutputStreamConexion();//new ObjectOutputStream(sCliente.getOutputStream());
-	            out.writeObject(mensaje);
-	            out.close();
-	
-	            conexion.cerrarConexion();
+	            conexion.enviaMensaje(mensaje);
 	
 	        } catch (Exception e) {
 	            ControladorRegistro.get(false).aviso("No se pudo establecer conexion con el Servidor. Por favor reintentelo mas tarde.");
@@ -149,11 +145,8 @@ public class Cliente implements Runnable, Emision, Recepcion {
 	
 	            }
 	
-	            ObjectOutputStream out = this.conexion.getOutputStreamConexion(); //new ObjectOutputStream(sCliente.getOutputStream());
-	            out.writeObject(mensaje);
-	            out.close();
+	            conexion.enviaMensaje(mensaje);
 	
-	            conexion.cerrarConexion();
         } catch (Exception e) {
            
         }

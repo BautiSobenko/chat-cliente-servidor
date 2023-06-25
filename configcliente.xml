@@ -2,13 +2,13 @@
 <java version="17.0.6" class="java.beans.XMLDecoder">
  <object class="configuracion.Configuracion">
   <void property="ip">
-   <string>192.168.0.16</string>
+   <string>192.168.0.12</string>
   </void>
   <void property="nickname">
-   <string>mar</string>
+   <string>abu</string>
   </void>
   <void property="puerto">
-   <int>3000</int>
+   <int>4000</int>
   </void>
  </object>
 </java>
